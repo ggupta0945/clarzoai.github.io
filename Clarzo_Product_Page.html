@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product — Clarzo.ai</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#040f0a;--surface:#071a10;--surface2:#0c2418;--card:#102e1e;--border:#1a4a2e;
+  --text:#e4f0e8;--text-dim:#88b098;--accent:#34d399;--accent2:#6ee7b7;--accent-deep:#059669;
+  --gold:#f5c842;--amber:#f59e0b;--red:#ef4444;--blue:#60a5fa;--purple:#a78bfa;
+  --font-display:'Playfair Display',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* Ambient */
+.bg-atmosphere{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.bg-atmosphere::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 90% 50% at 20% 0%,rgba(5,150,105,.09),transparent),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(52,211,153,.05),transparent),radial-gradient(circle at 60% 40%,rgba(245,200,66,.015),transparent),linear-gradient(var(--bg),var(--bg))}
+.bg-atmosphere::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(52,211,153,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(52,211,153,.02) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 60% at 50% 20%,#000 20%,transparent 80%)}
+
+/* Utility */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:50px;font-family:var(--font-body);font-weight:600;font-size:.95rem;border:none;cursor:pointer;transition:all .35s ease}
+.btn-primary{background:var(--accent-deep);color:#fff;box-shadow:0 0 30px rgba(5,150,105,.3)}
+.btn-primary:hover{background:#047857;box-shadow:0 0 50px rgba(5,150,105,.45);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--text);border:1.5px solid var(--border)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;text-transform:uppercase;letter-spacing:2.5px;color:var(--accent);font-weight:600;margin-bottom:16px}
+.section-label::before{content:'';width:24px;height:1.5px;background:var(--accent)}
+.section-title{font-family:var(--font-display);font-size:clamp(2rem,4vw,3.2rem);font-weight:600;line-height:1.2;margin-bottom:16px}
+.section-sub{color:var(--text-dim);font-size:1.05rem;max-width:600px;line-height:1.7}
+.reveal{opacity:0;transform:translateY(30px);transition:all .7s ease}
+.reveal.visible{opacity:1;transform:none}
+.divider{width:60%;max-width:500px;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:0 auto}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 0;transition:all .4s;backdrop-filter:blur(20px);background:rgba(4,15,10,.6);border-bottom:1px solid transparent}
+nav.scrolled{background:rgba(4,15,10,.92);border-bottom-color:var(--border)}
+nav .container{display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--font-display);font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:0}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:36px;font-size:.9rem;font-weight:500}
+.nav-links a{color:var(--text-dim);transition:color .3s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-cta{display:flex;align-items:center;gap:12px}
+.nav-cta .btn{padding:10px 24px;font-size:.85rem}
+@media(max-width:768px){.nav-links{display:none}.nav-cta .btn-outline{display:none}}
+
+/* Page Hero */
+.page-hero{padding:160px 0 80px;text-align:center;position:relative}
+.page-hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+.page-hero h1{font-family:var(--font-display);font-size:clamp(2.4rem,5vw,3.8rem);font-weight:600;line-height:1.15;margin-bottom:20px}
+.page-hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.page-hero p{color:var(--text-dim);font-size:1.12rem;line-height:1.8;max-width:620px;margin:0 auto 32px}
+.hero-badges{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.hero-badge{background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:8px 20px;font-size:.8rem;color:var(--text-dim);display:flex;align-items:center;gap:6px}
+.hero-badge .hb-dot{width:6px;height:6px;border-radius:50%}
+
+/* Feature Showcase — Alternating rows */
+.feature-section{padding:100px 0}
+.fs-row{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-bottom:100px}
+.fs-row:last-child{margin-bottom:0}
+.fs-row.reverse{direction:rtl}
+.fs-row.reverse>*{direction:ltr}
+.fs-text .fs-tag{display:inline-block;background:rgba(52,211,153,.1);color:var(--accent);padding:4px 12px;border-radius:8px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px}
+.fs-text h2{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:600;line-height:1.25;margin-bottom:14px}
+.fs-text p{color:var(--text-dim);font-size:.95rem;line-height:1.75;margin-bottom:16px}
+.fs-bullets{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.fs-bullets li{display:flex;align-items:start;gap:10px;font-size:.88rem;color:var(--text-dim);line-height:1.5}
+.fs-bullets li::before{content:'✓';color:var(--accent);font-weight:700;flex-shrink:0;width:20px;height:20px;display:flex;align-items:center;justify-content:center;background:rgba(52,211,153,.1);border-radius:50%;font-size:.7rem;margin-top:1px}
+
+/* Feature Visuals */
+.fs-visual{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;position:relative;overflow:hidden;min-height:340px;display:flex;flex-direction:column;justify-content:center}
+.fs-visual::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(52,211,153,.04),transparent 70%)}
+.fs-visual-inner{position:relative;z-index:1}
+
+/* Mock components */
+.mock-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.mock-row:last-child{border:none}
+.mock-row .m-name{display:flex;align-items:center;gap:10px;font-size:.86rem;font-weight:500}
+.mock-row .m-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.8rem}
+.mock-row .m-val{font-weight:600;font-size:.86rem}
+.green{color:var(--accent)}.red{color:var(--red)}.amber{color:var(--amber)}
+
+.mock-chat{display:flex;flex-direction:column;gap:12px}
+.chat-msg{max-width:88%;padding:12px 16px;border-radius:14px;font-size:.82rem;line-height:1.6}
+.chat-user{align-self:flex-end;background:var(--accent-deep);color:#fff;border-bottom-right-radius:4px}
+.chat-ai{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);border-bottom-left-radius:4px}
+.chat-ai .ai-tag{font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:5px;font-weight:600}
+
+.rebal-bar{display:flex;height:28px;border-radius:8px;overflow:hidden;margin-bottom:14px}
+.rebal-legend{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text-dim)}
+.legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.rebal-action{margin-top:16px;background:rgba(5,150,105,.08);border:1px solid rgba(52,211,153,.2);border-radius:12px;padding:12px;font-size:.8rem;color:var(--accent);display:flex;align-items:center;gap:10px}
+
+.spend-row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:.78rem}
+.spend-bar{height:6px;background:rgba(255,255,255,.04);border-radius:4px;margin-bottom:14px;overflow:hidden}
+.spend-fill{height:100%;border-radius:4px}
+
+.goal-item{display:flex;align-items:center;gap:12px;background:var(--surface2);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.goal-item:last-child{margin-bottom:0}
+.goal-item .g-emoji{font-size:1.2rem}
+.goal-item .g-info{flex:1}
+.goal-item .g-name{font-size:.8rem;font-weight:500;margin-bottom:4px}
+.goal-item .g-bar{height:5px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.goal-item .g-fill{height:100%;border-radius:4px}
+.goal-item .g-pct{font-size:.74rem;color:var(--text-dim);font-weight:700}
+
+.inst-grid{display:flex;flex-wrap:wrap;gap:8px}
+.inst-pill{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:.78rem;display:flex;align-items:center;gap:8px;transition:all .3s}
+.inst-pill:hover{border-color:var(--accent);background:rgba(52,211,153,.06)}
+.inst-pill .ip-icon{font-size:1rem}
+
+.family-members{display:flex;flex-direction:column;gap:12px}
+.fm-row{display:flex;align-items:center;gap:14px;background:var(--surface2);border-radius:12px;padding:14px 16px}
+.fm-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:var(--bg);flex-shrink:0}
+.fm-info{flex:1}
+.fm-name{font-size:.84rem;font-weight:600}
+.fm-role{font-size:.72rem;color:var(--text-dim)}
+.fm-val{font-weight:700;font-size:.88rem}
+
+.expert-mini{display:flex;flex-direction:column;gap:12px}
+.em-card{display:flex;align-items:center;gap:14px;background:var(--surface2);border-radius:12px;padding:14px 16px;transition:all .3s}
+.em-card:hover{border-color:var(--accent);transform:translateX(3px)}
+.em-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:var(--bg);flex-shrink:0}
+.em-info .em-name{font-size:.84rem;font-weight:600}
+.em-info .em-role{font-size:.72rem;color:var(--text-dim)}
+.em-info .em-stars{font-size:.7rem;color:var(--gold);margin-top:1px}
+
+@media(max-width:900px){
+  .fs-row,.fs-row.reverse{grid-template-columns:1fr;direction:ltr}
+  .fs-row.reverse>*{direction:ltr}
+}
+
+/* All Features Grid */
+.all-features{padding:80px 0}
+.af-header{text-align:center;margin-bottom:60px}
+.af-header .section-sub{margin:0 auto}
+.af-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.af-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center;transition:all .3s}
+.af-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.af-icon{font-size:1.6rem;margin-bottom:10px}
+.af-title{font-weight:600;font-size:.88rem;margin-bottom:6px}
+.af-text{font-size:.76rem;color:var(--text-dim);line-height:1.5}
+@media(max-width:768px){.af-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.af-grid{grid-template-columns:1fr}}
+
+/* CTA */
+.product-cta{padding:100px 0;text-align:center;position:relative}
+.product-cta::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:70%;height:400px;background:radial-gradient(ellipse,rgba(5,150,105,.1),transparent 70%)}
+.product-cta h2{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);font-weight:600;margin-bottom:16px}
+.product-cta h2 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.product-cta p{color:var(--text-dim);max-width:500px;margin:0 auto 36px;font-size:1.05rem}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:60px 0 30px;color:var(--text-dim)}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand .logo{margin-bottom:14px}
+.footer-brand p{font-size:.85rem;line-height:1.7;max-width:280px}
+.footer-col h4{font-size:.8rem;text-transform:uppercase;letter-spacing:2px;color:var(--text);margin-bottom:16px;font-weight:600}
+.footer-col a{display:block;font-size:.85rem;margin-bottom:10px;color:var(--text-dim);transition:color .3s}
+.footer-col a:hover{color:var(--accent)}
+.footer-social{display:flex;gap:12px;margin-top:20px}
+.footer-social a{width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .3s}
+.footer-social a:hover{border-color:var(--accent);color:var(--accent)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;font-size:.78rem;flex-wrap:wrap;gap:12px}
+@media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr;gap:30px}}
+@media(max-width:500px){.footer-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bg-atmosphere"></div>
+
+<!-- Nav -->
+<nav id="nav">
+  <div class="container">
+    <a href="Clarzo_Landing_Page.html" class="logo">Clarzo<span>.ai</span></a>
+    <div class="nav-links">
+      <a href="Clarzo_Product_Page.html" class="active">Product</a>
+      <a href="Clarzo_Stock_Discovery.html">Discovery</a>
+      <a href="Clarzo_Knowledge_Repo.html">Knowledge</a>
+      <a href="Clarzo_About_Us.html">About Us</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#" class="btn btn-outline">Login</a>
+      <a href="#" class="btn btn-primary">Review My Portfolio</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Page Hero -->
+<section class="page-hero">
+  <div class="container">
+    <div class="section-label">The Product</div>
+    <h1>An Intelligent AI-Powered<br><em>Portfolio Whisperer</em></h1>
+    <p>Clarzo.ai summarizes, simplifies, and strategizes your entire investment journey. It educates you on risk vs. return dynamically — and tells you exactly what to do next.</p>
+    <div class="hero-badges">
+      <div class="hero-badge"><span class="hb-dot" style="background:var(--accent)"></span> Portfolio Connect</div>
+      <div class="hero-badge"><span class="hb-dot" style="background:var(--blue)"></span> AI Insights</div>
+      <div class="hero-badge"><span class="hb-dot" style="background:var(--gold)"></span> ClarzoGPT</div>
+      <div class="hero-badge"><span class="hb-dot" style="background:var(--purple)"></span> Goal Mapping</div>
+      <div class="hero-badge"><span class="hb-dot" style="background:var(--amber)"></span> Expert Access</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FEATURE DEEP DIVES ═══════════ -->
+<section class="feature-section">
+  <div class="container">
+
+    <!-- 1. Portfolio Connect -->
+    <div class="fs-row reveal">
+      <div class="fs-text">
+        <div class="fs-tag">Foundation</div>
+        <h2>Portfolio Connect — All Accounts in One Place</h2>
+        <p>Your money is scattered across Zerodha, Groww, CAMS, bank accounts, PPF, EPF, and even your parents' portfolios. Clarzo.ai pulls it all together using AI to parse and unify your complete financial footprint.</p>
+        <ul class="fs-bullets">
+          <li>Parse data from emails/SMS — CDSL, CAMS, Zerodha, Groww, Paytm, Scripbox</li>
+          <li>Accept CSVs or screenshots of demat holdings</li>
+          <li>Input real estate, FDs, gold manually or via lookup</li>
+          <li>Supports 10+ asset classes across platforms</li>
+        </ul>
+      </div>
+      <div class="fs-visual">
+        <div class="fs-visual-inner">
+          <div style="font-size:.78rem;color:var(--accent);font-weight:600;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px">Connected Instruments</div>
+          <div class="inst-grid">
+            <div class="inst-pill"><span class="ip-icon">📈</span> Stocks</div>
+            <div class="inst-pill"><span class="ip-icon">📊</span> Mutual Funds</div>
+            <div class="inst-pill"><span class="ip-icon">🥇</span> Gold & Silver</div>
+            <div class="inst-pill"><span class="ip-icon">🏦</span> Fixed Deposits</div>
+            <div class="inst-pill"><span class="ip-icon">₿</span> Crypto</div>
+            <div class="inst-pill"><span class="ip-icon">🏠</span> Real Estate</div>
+            <div class="inst-pill"><span class="ip-icon">🏛️</span> PPF / NPS / EPF</div>
+            <div class="inst-pill"><span class="ip-icon">💳</span> Bank Accounts</div>
+          </div>
+          <div style="margin-top:20px;background:rgba(5,150,105,.08);border-radius:10px;padding:12px;font-size:.78rem;color:var(--accent);border:1px solid rgba(52,211,153,.15)">✓ All accounts synced — total net worth: ₹24,87,350</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Portfolio Understanding / Insights -->
+    <div class="fs-row reverse reveal">
+      <div class="fs-text">
+        <div class="fs-tag">Intelligence</div>
+        <h2>Your Portfolio's Story — In Plain English</h2>
+        <p>No financial jargon. Clarzo tells you exactly how your money is performing — last month, last year, and compared to the market. Clear, honest, actionable. Categorized by asset class, risk level, sector exposure, goal alignment, and time horizon.</p>
+        <ul class="fs-bullets">
+          <li>"Your equity portfolio grew 12% YoY, but was highly volatile in the last 3 months."</li>
+          <li>"Your mutual fund SIPs have returned 8.3% CAGR since start."</li>
+          <li>Compare your returns against Nifty, Sensex, and similar investors</li>
+          <li>Proactive nudges: "3 SIPs expire next month" "Overlapping funds detected"</li>
+        </ul>
+      </div>
+      <div class="fs-visual">
+        <div class="fs-visual-inner">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px">
+            <div><div style="font-size:1.3rem;font-weight:700;font-family:var(--font-display)">₹24.8L</div><div style="font-size:.76rem;color:var(--accent);margin-top:2px">+12.4% vs Nifty's +8.2%</div></div>
+            <div style="font-size:.72rem;color:var(--text-dim);background:var(--surface2);padding:5px 10px;border-radius:8px">1Y Return</div>
+          </div>
+          <div class="mock-row"><span class="m-name" style="font-size:.82rem">Equity Performance</span><span class="m-val green">+18.3%</span></div>
+          <div class="mock-row"><span class="m-name" style="font-size:.82rem">Debt Returns</span><span class="m-val green">+7.1%</span></div>
+          <div class="mock-row"><span class="m-name" style="font-size:.82rem">Gold Returns</span><span class="m-val green">+14.8%</span></div>
+          <div class="mock-row"><span class="m-name" style="font-size:.82rem">Crypto</span><span class="m-val red">-4.2%</span></div>
+          <div style="margin-top:16px;background:rgba(5,150,105,.08);border-radius:10px;padding:12px;font-size:.78rem;color:var(--accent);border:1px solid rgba(52,211,153,.15)">💡 Your portfolio outperformed 78% of similar investors this year.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. ClarzoGPT -->
+    <div class="fs-row reveal">
+      <div class="fs-text">
+        <div class="fs-tag">AI Engine</div>
+        <h2>ClarzoGPT — Talk to Your Portfolio</h2>
+        <p>Ask any question about your portfolio — in plain language. "What's my best performing asset?" "Am I too exposed to small caps?" "How much did I invest in tech sector last year?" Get instant, personalized answers powered by an LLM with custom-trained financial ontology.</p>
+        <ul class="fs-bullets">
+          <li>Natural language answers about holdings, allocation, and performance</li>
+          <li>Understands Hindi + English — "Kya yeh mutual fund sahi hai?"</li>
+          <li>Answers based on your real data, not generic advice</li>
+          <li>Ask about affordability: "Can I afford a ₹15L car?"</li>
+        </ul>
+      </div>
+      <div class="fs-visual">
+        <div class="fs-visual-inner">
+          <div class="mock-chat">
+            <div class="chat-msg chat-user">What's my best performing asset?</div>
+            <div class="chat-msg chat-ai">
+              <div class="ai-tag">ClarzoGPT</div>
+              Your gold holdings are up 14.8% this year — the best in your portfolio. Equity MFs follow at +12.4%. Want a breakdown by individual fund?
+            </div>
+            <div class="chat-msg chat-user">Am I too exposed to small caps?</div>
+            <div class="chat-msg chat-ai">
+              <div class="ai-tag">ClarzoGPT</div>
+              Yes — 38% of your equity is in small caps. For your risk profile, cap at 20%. Consider shifting ₹1.5L into flexi-cap funds for a safer balance.
+            </div>
+            <div class="chat-msg chat-user">Agar main ₹2000 har mahine invest karu, kya milega?</div>
+            <div class="chat-msg chat-ai">
+              <div class="ai-tag">ClarzoGPT</div>
+              At 12% annual return, ₹2,000/month SIP would grow to ~₹5.9L in 10 years and ~₹20L in 20 years. Want me to suggest funds that match?
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Rebalancing -->
+    <div class="fs-row reverse reveal">
+      <div class="fs-text">
+        <div class="fs-tag">Strategy</div>
+        <h2>Smart Rebalancing — Stay Balanced, Stay Confident</h2>
+        <p>Clarzo detects when your portfolio drifts from your ideal allocation and guides you back — for risk control and consistent growth. Based on your age, goals, and volatility preference.</p>
+        <ul class="fs-bullets">
+          <li>"Shift 10% from equity to short-duration debt to reduce drawdown risk."</li>
+          <li>"Real estate is over 40% of your portfolio — consider liquidity tradeoffs."</li>
+          <li>Drift alerts when allocation deviates from your target</li>
+          <li>Educational tone — never prescriptive, always your decision</li>
+        </ul>
+      </div>
+      <div class="fs-visual">
+        <div class="fs-visual-inner">
+          <div style="font-size:.76rem;color:var(--text-dim);margin-bottom:8px">Current Allocation</div>
+          <div class="rebal-bar">
+            <div style="width:52%;background:var(--accent-deep)"></div>
+            <div style="width:22%;background:var(--blue)"></div>
+            <div style="width:18%;background:var(--gold)"></div>
+            <div style="width:8%;background:var(--purple)"></div>
+          </div>
+          <div style="font-size:.76rem;color:var(--text-dim);margin-bottom:8px">Target Allocation</div>
+          <div class="rebal-bar">
+            <div style="width:45%;background:var(--accent-deep)"></div>
+            <div style="width:30%;background:var(--blue)"></div>
+            <div style="width:15%;background:var(--gold)"></div>
+            <div style="width:10%;background:var(--purple)"></div>
+          </div>
+          <div class="rebal-legend" style="margin-top:12px">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--accent-deep)"></span>Equity 52% → 45%</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>Debt 22% → 30%</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--gold)"></span>Gold 18% → 15%</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--purple)"></span>FDs 8% → 10%</div>
+          </div>
+          <div class="rebal-action">⚡ Suggestion: Move ₹1.2L from equity to debt funds for optimal balance</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Spending Behavior -->
+    <div class="fs-row reveal">
+      <div class="fs-text">
+        <div class="fs-tag">Money Flow</div>
+        <h2>Spending Behavior — Know Where Your Money Goes</h2>
+        <p>Connect your bank accounts and see the full picture — not just what you invest, but what you spend. Category-wise analysis, net credit/debit flow, month-wise and week-wise breakdowns.</p>
+        <ul class="fs-bullets">
+          <li>The sectors where you're spending and investing</li>
+          <li>Net credit/debit flow with month and week-wise analysis</li>
+          <li>Identify auto-payments and subscriptions draining money</li>
+          <li>Savings rate tracking vs your target</li>
+        </ul>
+      </div>
+      <div class="fs-visual">
+        <div class="fs-visual-inner">
+          <div style="font-size:.78rem;color:var(--accent);font-weight:600;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px">Monthly Breakdown — Mar 2026</div>
+          <div class="spend-row"><span>Food & Dining</span><span style="color:var(--amber);font-weight:600">₹12,400</span></div>
+          <div class="spend-bar"><div class="spend-fill" style="width:65%;background:var(--amber)"></div></div>
+          <div class="spend-row"><span>Shopping</span><span style="color:var(--purple);font-weight:600">₹8,900</span></div>
+          <div class="spend-bar"><div class="spend-fill" style="width:47%;background:var(--purple)"></div></div>
+          <div class="spend-row"><span>Subscriptions</span><span style="color:var(--red);font-weight:600">₹4,200</span></div>
+          <div class="spend-bar"><div class="spend-fill" style="width:22%;background:var(--red)"></div></div>
+          <div class="spend-row"><span>Transport</span><span style="color:var(--blue);font-weight:600">₹3,800</span></div>
+          <div class="spend-bar"><div class="spend-fill" style="width:20%;background:var(--blue)"></div></div>
+          <div style="margin-top:12px;display:flex;justify-content:space-between;padding:12px;background:var(--surface2);border-radius:10px;font-size:.78rem">
+            <span style="color:var(--text-dim)">Net Flow</span>
+            <span style="color:var(--accent);font-weight:700">+₹34,200 saved</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Goal Mapping -->
+    <div class="fs-row reverse reveal">
+      <div class="fs-text">
+        <div class="fs-tag">Life Goals</div>
+        <h2>Goal Mapping — Every Rupee With a Mission</h2>
+        <p>Align your investments with life goals — retirement, home purchase, kids' education, vehicle. Track progress and stay on course. Clarzo maps your existing investments to your future plans.</p>
+        <ul class="fs-bullets">
+          <li>"Your ₹4L in debt fund aligns with your home down payment in 2026."</li>
+          <li>"Consider term insurance — your dependents exceed current coverage."</li>
+          <li>Visual progress tracking for each goal</li>
+          <li>Retirement, vehicle, house purchase, kids education & more</li>
+        </ul>
+      </div>
+      <div class="fs-visual">
+        <div class="fs-visual-inner">
+          <div style="font-size:.78rem;color:var(--accent);font-weight:600;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px">Your Goals</div>
+          <div class="goal-item"><div class="g-emoji">🏠</div><div class="g-info"><div class="g-name">Home Down Payment — 2027</div><div class="g-bar"><div class="g-fill" style="width:62%;background:var(--accent)"></div></div></div><div class="g-pct">62%</div></div>
+          <div class="goal-item"><div class="g-emoji">🚗</div><div class="g-info"><div class="g-name">New Car — 2026</div><div class="g-bar"><div class="g-fill" style="width:84%;background:var(--accent2)"></div></div></div><div class="g-pct">84%</div></div>
+          <div class="goal-item"><div class="g-emoji">🎓</div><div class="g-info"><div class="g-name">Kids Education — 2034</div><div class="g-bar"><div class="g-fill" style="width:28%;background:var(--blue)"></div></div></div><div class="g-pct">28%</div></div>
+          <div class="goal-item"><div class="g-emoji">🏖️</div><div class="g-info"><div class="g-name">Retirement Corpus — 2048</div><div class="g-bar"><div class="g-fill" style="width:15%;background:var(--gold)"></div></div></div><div class="g-pct">15%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Family Tracking -->
+    <div class="fs-row reveal">
+      <div class="fs-text">
+        <div class="fs-tag">Household</div>
+        <h2>Family Investment Tracking</h2>
+        <p>In India, money decisions are never just yours. Combine household investments — yours, your spouse's, your parents' — for a complete family net worth picture. Joint financial planning, the way it should be.</p>
+        <ul class="fs-bullets">
+          <li>Add family members and their portfolios</li>
+          <li>Combined household net worth dashboard</li>
+          <li>Individual vs family allocation views</li>
+          <li>Track parents' investments alongside yours</li>
+        </ul>
+      </div>
+      <div class="fs-visual">
+        <div class="fs-visual-inner">
+          <div style="font-size:.78rem;color:var(--accent);font-weight:600;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px">Family Net Worth — ₹78.4L</div>
+          <div class="family-members">
+            <div class="fm-row"><div class="fm-avatar" style="background:linear-gradient(135deg,var(--accent-deep),var(--accent))">A</div><div class="fm-info"><div class="fm-name">Arjun (You)</div><div class="fm-role">Primary</div></div><div class="fm-val green">₹24.8L</div></div>
+            <div class="fm-row"><div class="fm-avatar" style="background:linear-gradient(135deg,var(--blue),#93c5fd)">S</div><div class="fm-info"><div class="fm-name">Sneha</div><div class="fm-role">Spouse</div></div><div class="fm-val green">₹18.2L</div></div>
+            <div class="fm-row"><div class="fm-avatar" style="background:linear-gradient(135deg,var(--gold),#fde68a)">D</div><div class="fm-info"><div class="fm-name">Dad</div><div class="fm-role">Parent</div></div><div class="fm-val green">₹22.1L</div></div>
+            <div class="fm-row"><div class="fm-avatar" style="background:linear-gradient(135deg,var(--purple),#c4b5fd)">M</div><div class="fm-info"><div class="fm-name">Mom</div><div class="fm-role">Parent</div></div><div class="fm-val green">₹13.3L</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Connect to Expert -->
+    <div class="fs-row reverse reveal">
+      <div class="fs-text">
+        <div class="fs-tag">Human + AI</div>
+        <h2>Connect to an Expert</h2>
+        <p>Sometimes you need more than AI. Clarzo connects you with certified financial planners for personalized strategies you can truly rely on. One-on-one video consultations for the decisions that matter most.</p>
+        <ul class="fs-bullets">
+          <li>SEBI-registered investment advisors</li>
+          <li>One-on-one video consultations</li>
+          <li>Goal-specific financial planning</li>
+          <li>Tax optimization strategies</li>
+        </ul>
+      </div>
+      <div class="fs-visual">
+        <div class="fs-visual-inner">
+          <div style="font-size:.78rem;color:var(--accent);font-weight:600;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px">Available Experts</div>
+          <div class="expert-mini">
+            <div class="em-card"><div class="em-avatar" style="background:linear-gradient(135deg,var(--accent-deep),var(--accent))">RS</div><div class="em-info"><div class="em-name">Rahul Sharma, CFP</div><div class="em-role">Retirement & Tax Planning</div><div class="em-stars">★★★★★ 4.9</div></div></div>
+            <div class="em-card"><div class="em-avatar" style="background:linear-gradient(135deg,var(--blue),#93c5fd)">PM</div><div class="em-info"><div class="em-name">Priya Mehta, CFA</div><div class="em-role">Equity & Mutual Funds</div><div class="em-stars">★★★★★ 4.8</div></div></div>
+            <div class="em-card"><div class="em-avatar" style="background:linear-gradient(135deg,var(--gold),#fde68a)">AK</div><div class="em-info"><div class="em-name">Arjun Kapoor, CFP</div><div class="em-role">Wealth & Estate Planning</div><div class="em-stars">★★★★★ 4.9</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- All Features Grid -->
+<div class="divider"></div>
+<section class="all-features">
+  <div class="container">
+    <div class="af-header reveal">
+      <div class="section-label">Everything Included</div>
+      <h2 class="section-title">Every Feature at a Glance</h2>
+      <p class="section-sub">From portfolio tracking to tax planning — here's everything Clarzo.ai offers.</p>
+    </div>
+    <div class="af-grid">
+      <div class="af-card reveal"><div class="af-icon">🔗</div><div class="af-title">Portfolio Connect</div><div class="af-text">All accounts, one place</div></div>
+      <div class="af-card reveal"><div class="af-icon">💡</div><div class="af-title">Smart Insights</div><div class="af-text">Performance vs market</div></div>
+      <div class="af-card reveal"><div class="af-icon">🤖</div><div class="af-title">ClarzoGPT</div><div class="af-text">Ask anything, get answers</div></div>
+      <div class="af-card reveal"><div class="af-icon">⚖️</div><div class="af-title">Rebalancing</div><div class="af-text">Drift alerts & nudges</div></div>
+      <div class="af-card reveal"><div class="af-icon">💳</div><div class="af-title">Spending Tracker</div><div class="af-text">Where your money goes</div></div>
+      <div class="af-card reveal"><div class="af-icon">🎯</div><div class="af-title">Goal Mapping</div><div class="af-text">Invest with purpose</div></div>
+      <div class="af-card reveal"><div class="af-icon">👨‍👩‍👧‍👦</div><div class="af-title">Family View</div><div class="af-text">Household net worth</div></div>
+      <div class="af-card reveal"><div class="af-icon">👨‍💼</div><div class="af-title">Expert Connect</div><div class="af-text">SEBI-registered advisors</div></div>
+      <div class="af-card reveal"><div class="af-icon">🔔</div><div class="af-title">Proactive Nudges</div><div class="af-text">SIP expiry, overlap alerts</div></div>
+      <div class="af-card reveal"><div class="af-icon">📊</div><div class="af-title">Loan EMI Calculator</div><div class="af-text">Plan before you borrow</div></div>
+      <div class="af-card reveal"><div class="af-icon">🛡️</div><div class="af-title">Insurance Insights</div><div class="af-text">Coverage gap analysis</div></div>
+      <div class="af-card reveal"><div class="af-icon">📋</div><div class="af-title">Tax Filing</div><div class="af-text">Tax-saving integrations</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="product-cta reveal">
+  <div class="container">
+    <h2>Ready to Take Control<br>of Your Finances?</h2>
+    <p>Join thousands of Indians building wealth with clarity and confidence.</p>
+    <a href="#" class="btn btn-primary">Get Started Free →</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">Clarzo<span>.ai</span></div>
+        <p>Your AI-powered wealth partner — helping you track, plan, and grow your money with personalized insights and smarter financial decisions.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+          <a href="#" aria-label="X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+        </div>
+      </div>
+<div class="footer-col"><h4>Explore</h4><a href="Clarzo_Knowledge_Repo.html">Knowledge Repo</a><a href="Clarzo_Calculators.html">Calculators</a><a href="Clarzo_About_Us.html">About Us</a><a href="Clarzo_Landing_Page.html#faq">FAQ</a></div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="Clarzo_Privacy_Security.html">Privacy &amp; Security</a>
+        
+        <a href="Clarzo_Terms.html">Terms &amp; Conditions</a>
+      </div>
+      <div class="footer-col">
+        <h4>Get Started</h4>
+        <a href="#">Login</a>
+        <a href="#">Review Portfolio</a>
+        <a href="#">Talk to Expert</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2021–2025 Clarzo. All Rights Reserved | Made with ❤️</span>
+      <span>Your money deserves better.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>50)});
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>

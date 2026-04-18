@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Calculators — Clarzo.ai</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#040f0a;--surface:#071a10;--surface2:#0c2418;--card:#102e1e;--border:#1a4a2e;
+  --text:#e4f0e8;--text-dim:#88b098;--accent:#34d399;--accent2:#6ee7b7;--accent-deep:#059669;
+  --gold:#f5c842;--amber:#f59e0b;--red:#ef4444;--blue:#60a5fa;--purple:#a78bfa;
+  --font-display:'Playfair Display',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif;
+  --font-num:'Book Antiqua','Palatino Linotype','Palatino',Georgia,serif;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.bg-atmosphere{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.bg-atmosphere::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 90% 50% at 20% 0%,rgba(5,150,105,.09),transparent),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(52,211,153,.05),transparent),linear-gradient(var(--bg),var(--bg))}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 0;transition:all .4s;backdrop-filter:blur(20px);background:rgba(4,15,10,.6);border-bottom:1px solid transparent}
+nav.scrolled{background:rgba(4,15,10,.92);border-bottom-color:var(--border)}
+nav .container{display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--font-display);font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:0}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:36px;font-size:.9rem;font-weight:500}
+.nav-links a{color:var(--text-dim);transition:color .3s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-cta{display:flex;align-items:center;gap:12px}
+.nav-cta .btn{padding:10px 24px;font-size:.85rem}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:50px;font-family:var(--font-body);font-weight:600;font-size:.95rem;border:none;cursor:pointer;transition:all .35s ease}
+.btn-primary{background:var(--accent-deep);color:#fff;box-shadow:0 0 30px rgba(5,150,105,.3)}
+.btn-primary:hover{background:#047857;box-shadow:0 0 50px rgba(5,150,105,.45);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--text);border:1.5px solid var(--border)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:768px){.nav-links{display:none}.nav-cta .btn-outline{display:none}}
+
+/* Page */
+.page-hero{padding:140px 0 40px;text-align:center}
+.page-hero h1{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);font-weight:600;margin-bottom:12px}
+.page-hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.page-hero p{color:var(--text-dim);font-size:1rem;max-width:540px;margin:0 auto}
+
+/* Calc Tabs */
+.calc-tabs{padding:28px 0;position:sticky;top:64px;z-index:50;background:rgba(4,15,10,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.calc-tabs-inner{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.calc-tabs-inner::-webkit-scrollbar{height:0}
+.ct-btn{padding:9px 18px;border-radius:10px;font-size:.8rem;font-weight:500;color:var(--text-dim);background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:all .3s;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:6px}
+.ct-btn.active,.ct-btn:hover{background:var(--accent-deep);color:#fff;border-color:var(--accent-deep)}
+.ct-btn .ct-emoji{font-size:.95rem}
+
+/* Calculator Container */
+.calc-container{padding:48px 0 80px}
+.calc-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;max-width:900px;margin:0 auto}
+.calc-layout{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.calc-inputs{display:flex;flex-direction:column;gap:28px}
+.calc-output{display:flex;flex-direction:column;align-items:center;gap:24px}
+@media(max-width:768px){.calc-layout{grid-template-columns:1fr}.calc-output{order:-1}}
+
+/* Slider Fields */
+.sf{position:relative}
+.sf-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.sf-label{font-size:.88rem;font-weight:500;color:var(--text-dim)}
+.sf-value{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-family:var(--font-num);font-size:.92rem;font-weight:600;color:var(--accent);min-width:110px;text-align:center;display:flex;align-items:center;justify-content:center;gap:4px}
+.sf-value .unit{font-size:.75rem;color:var(--text-dim);font-weight:400}
+input[type=range]{-webkit-appearance:none;width:100%;height:6px;background:var(--border);border-radius:6px;outline:none;position:relative}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 10px rgba(52,211,153,.3);border:3px solid var(--bg)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);cursor:pointer;border:3px solid var(--bg)}
+.sf-track{position:relative;margin-top:-3px}
+.sf-fill{position:absolute;top:0;left:0;height:6px;background:var(--accent);border-radius:6px;pointer-events:none}
+
+/* Select */
+.sf select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:.88rem;color:var(--text);font-family:var(--font-body);outline:none;cursor:pointer;margin-top:6px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2388b098' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+
+/* Donut Chart */
+.donut-wrap{position:relative;width:220px;height:220px}
+.donut-wrap canvas{width:220px;height:220px}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut-center .dc-val{font-family:var(--font-num);font-size:1.5rem;font-weight:700;color:var(--text)}
+.donut-center .dc-label{font-size:.72rem;color:var(--text-dim);margin-top:2px}
+
+/* Legend */
+.chart-legend{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+.cl-item{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--text-dim)}
+.cl-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* Results Table */
+.results-table{width:100%;margin-top:8px}
+.rt-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.rt-row:last-child{border:none}
+.rt-label{font-size:.9rem;color:var(--text-dim)}
+.rt-val{font-family:var(--font-num);font-size:.95rem;font-weight:700}
+.rt-highlight{padding:16px 0;margin-top:4px}
+.rt-highlight .rt-val{color:var(--accent);font-size:1.15rem}
+
+/* Amortization */
+.amort-toggle{text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.amort-toggle button{background:none;border:none;color:var(--text-dim);font-size:.85rem;font-family:var(--font-body);cursor:pointer;display:flex;align-items:center;gap:6px;margin:0 auto;transition:color .3s}
+.amort-toggle button:hover{color:var(--accent)}
+.amort-table{display:none;margin-top:16px;max-height:300px;overflow-y:auto;border:1px solid var(--border);border-radius:12px}
+.amort-table.open{display:block}
+.amort-table table{width:100%;border-collapse:collapse;font-size:.78rem}
+.amort-table th{position:sticky;top:0;background:var(--surface2);padding:10px 12px;text-align:right;color:var(--accent);font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.8px}
+.amort-table th:first-child{text-align:left}
+.amort-table td{padding:8px 12px;border-top:1px solid rgba(255,255,255,.03);text-align:right;font-family:var(--font-num);font-size:.78rem;color:var(--text-dim)}
+.amort-table td:first-child{text-align:left;color:var(--text);font-family:var(--font-body)}
+.amort-table::-webkit-scrollbar{width:4px}
+.amort-table::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+.disclaimer-bar{text-align:center;font-size:.72rem;color:var(--text-dim);opacity:.5;margin-top:20px}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:60px 0 30px;color:var(--text-dim)}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand .logo{margin-bottom:14px}
+.footer-brand p{font-size:.85rem;line-height:1.7;max-width:280px}
+.footer-col h4{font-size:.8rem;text-transform:uppercase;letter-spacing:2px;color:var(--text);margin-bottom:16px;font-weight:600}
+.footer-col a{display:block;font-size:.85rem;margin-bottom:10px;color:var(--text-dim);transition:color .3s}
+.footer-col a:hover{color:var(--accent)}
+.footer-social{display:flex;gap:12px;margin-top:20px}
+.footer-social a{width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .3s}
+.footer-social a:hover{border-color:var(--accent);color:var(--accent)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;font-size:.78rem;flex-wrap:wrap;gap:12px}
+@media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr;gap:30px}}
+@media(max-width:500px){.footer-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bg-atmosphere"></div>
+
+<nav id="nav">
+  <div class="container">
+    <a href="Clarzo_Landing_Page.html" class="logo">Clarzo<span>.ai</span></a>
+    <div class="nav-links">
+      <a href="Clarzo_Product_Page.html">Product</a>
+      <a href="Clarzo_Stock_Discovery.html">Discovery</a>
+      <a href="Clarzo_Knowledge_Repo.html">Knowledge</a>
+      <a href="Clarzo_About_Us.html">About Us</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#" class="btn btn-outline">Login</a>
+      <a href="#" class="btn btn-primary">Review My Portfolio</a>
+    </div>
+  </div>
+</nav>
+
+<section class="page-hero">
+  <div class="container">
+    <h1>Financial <em>Calculators</em></h1>
+    <p>Plan smarter with real numbers. Every calculator uses accurate Indian financial formulas.</p>
+  </div>
+</section>
+
+<div class="calc-tabs">
+  <div class="container">
+    <div class="calc-tabs-inner" id="calcTabs"></div>
+  </div>
+</div>
+
+<section class="calc-container">
+  <div class="container">
+    <div class="calc-box" id="calcBox"></div>
+    <div class="disclaimer-bar">⚠️ For educational purposes only. Not financial advice. Consult a qualified advisor before making financial decisions.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">Clarzo<span>.ai</span></div>
+        <p>Your AI-powered wealth partner — helping you track, plan, and grow your money with personalized insights and smarter financial decisions.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c0-1.14-.925-2.065-2.063-2.065a2.064 2.064 0 110 4.13c1.138 0 2.063-.926 2.063-2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+          <a href="#" aria-label="X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col"><h4>Explore</h4><a href="Clarzo_Knowledge_Repo.html">Knowledge Repo</a><a href="Clarzo_Calculators.html">Calculators</a><a href="Clarzo_About_Us.html">About Us</a><a href="Clarzo_Landing_Page.html#faq">FAQ</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="Clarzo_Privacy_Security.html">Privacy & Security</a><a href="Clarzo_Terms.html">Terms & Conditions</a></div>
+      <div class="footer-col"><h4>Get Started</h4><a href="#">Login</a><a href="#">Review Portfolio</a><a href="#">Talk to Expert</a></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2021–2025 Clarzo. All Rights Reserved | Made with ❤️</span>
+      <span>Your money deserves better.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const fmt=n=>'₹'+new Intl.NumberFormat('en-IN').format(Math.round(n));
+const CALCS=[
+  {id:'emi',name:'EMI Calculator',emoji:'🏠'},
+  {id:'tax',name:'Tax Calculator',emoji:'📋'},
+  {id:'sip',name:'SIP Calculator',emoji:'📈'},
+  {id:'lumpsum',name:'Lump Sum',emoji:'💰'},
+  {id:'retirement',name:'Retirement',emoji:'🏖️'},
+  {id:'ppf',name:'PPF Calculator',emoji:'🏛️'},
+  {id:'fd',name:'FD Calculator',emoji:'🏦'},
+  {id:'gratuity',name:'Gratuity',emoji:'🎁'},
+];
+let activeCalc='emi';
+
+// Tabs
+const tabsEl=document.getElementById('calcTabs');
+tabsEl.innerHTML=CALCS.map(c=>`<div class="ct-btn${c.id==='emi'?' active':''}" data-id="${c.id}" onclick="switchCalc('${c.id}')"><span class="ct-emoji">${c.emoji}</span>${c.name}</div>`).join('');
+
+function switchCalc(id){
+  activeCalc=id;
+  document.querySelectorAll('.ct-btn').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+  buildCalc(id);
+}
+
+function sf(id,label,unit,min,max,step,val){
+  const pct=((val-min)/(max-min))*100;
+  return `<div class="sf"><div class="sf-top"><span class="sf-label">${label}</span><div class="sf-value"><span class="unit">${unit}</span> <span id="${id}Display">${unit==='₹'?new Intl.NumberFormat('en-IN').format(val):val}</span></div></div><div class="sf-track"><div class="sf-fill" id="${id}Fill" style="width:${pct}%"></div><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}" oninput="updateSlider('${id}','${unit}',${min},${max});compute()"></div></div>`;
+}
+
+function updateSlider(id,unit,min,max){
+  const v=+document.getElementById(id).value;
+  document.getElementById(id+'Display').textContent=unit==='₹'?new Intl.NumberFormat('en-IN').format(v):v;
+  document.getElementById(id+'Fill').style.width=((v-min)/(max-min))*100+'%';
+}
+
+function drawDonut(canvasId,segments,centerText,centerLabel){
+  const canvas=document.getElementById(canvasId);
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=220*dpr;canvas.height=220*dpr;
+  canvas.style.width='220px';canvas.style.height='220px';
+  ctx.scale(dpr,dpr);
+  const cx=110,cy=110,r=85,lw=28;
+  ctx.clearRect(0,0,220,220);
+  let start=-Math.PI/2;
+  const total=segments.reduce((a,s)=>a+s.val,0);
+  segments.forEach(s=>{
+    const angle=(s.val/total)*Math.PI*2;
+    ctx.beginPath();ctx.arc(cx,cy,r,start,start+angle);
+    ctx.lineWidth=lw;ctx.strokeStyle=s.color;ctx.lineCap='butt';ctx.stroke();
+    start+=angle;
+  });
+  // Center text
+  const dc=canvas.parentElement.querySelector('.donut-center');
+  if(dc){dc.querySelector('.dc-val').textContent=centerText;dc.querySelector('.dc-label').textContent=centerLabel;}
+}
+
+// ═══════ BUILD CALCULATORS ═══════
+function buildCalc(id){
+  const box=document.getElementById('calcBox');
+  const builders={emi:buildEMI,tax:buildTax,sip:buildSIP,lumpsum:buildLS,retirement:buildRet,ppf:buildPPF,fd:buildFD,gratuity:buildGrat};
+  if(builders[id])builders[id](box);
+  setTimeout(compute,50);
+}
+
+function buildEMI(box){
+  box.innerHTML=`<div class="calc-layout"><div class="calc-inputs">
+    ${sf('emiP','Loan amount','₹',100000,50000000,50000,5000000)}
+    ${sf('emiR','Rate of interest (p.a)','%',1,20,0.1,8.5)}
+    ${sf('emiT','Loan tenure','Yr',1,30,1,20)}
+  </div><div class="calc-output">
+    <div class="donut-wrap"><canvas id="emiChart"></canvas><div class="donut-center"><div class="dc-val">—</div><div class="dc-label">Monthly EMI</div></div></div>
+    <div class="chart-legend"><div class="cl-item"><div class="cl-dot" style="background:var(--accent)"></div>Principal</div><div class="cl-item"><div class="cl-dot" style="background:var(--blue)"></div>Interest</div></div>
+    <div class="results-table" id="emiResults"></div>
+    <div class="amort-toggle"><button onclick="this.parentElement.nextElementSibling.classList.toggle('open')">Your Amortization Details (Yearly) ⊕</button></div>
+    <div class="amort-table" id="emiAmort"></div>
+  </div></div>`;
+}
+function buildTax(box){
+  box.innerHTML=`<div class="calc-layout"><div class="calc-inputs">
+    ${sf('taxIncome','Annual Income','₹',100000,50000000,50000,1200000)}
+    ${sf('tax80C','80C Deductions','₹',0,150000,5000,150000)}
+    ${sf('tax80D','80D (Health Insurance)','₹',0,100000,5000,25000)}
+    ${sf('taxHRA','HRA Exemption','₹',0,500000,5000,0)}
+  </div><div class="calc-output">
+    <div class="donut-wrap"><canvas id="taxChart"></canvas><div class="donut-center"><div class="dc-val">—</div><div class="dc-label">Better Regime</div></div></div>
+    <div class="chart-legend"><div class="cl-item"><div class="cl-dot" style="background:var(--accent)"></div>Old Regime</div><div class="cl-item"><div class="cl-dot" style="background:var(--blue)"></div>New Regime</div></div>
+    <div class="results-table" id="taxResults"></div>
+  </div></div>`;
+}
+function buildSIP(box){
+  box.innerHTML=`<div class="calc-layout"><div class="calc-inputs">
+    ${sf('sipAmt','Monthly SIP Amount','₹',500,500000,500,10000)}
+    ${sf('sipR','Expected Return (p.a)','%',1,30,0.5,12)}
+    ${sf('sipT','Time Period','Yr',1,40,1,15)}
+  </div><div class="calc-output">
+    <div class="donut-wrap"><canvas id="sipChart"></canvas><div class="donut-center"><div class="dc-val">—</div><div class="dc-label">Maturity Value</div></div></div>
+    <div class="chart-legend"><div class="cl-item"><div class="cl-dot" style="background:var(--accent)"></div>Invested</div><div class="cl-item"><div class="cl-dot" style="background:var(--gold)"></div>Returns</div></div>
+    <div class="results-table" id="sipResults"></div>
+  </div></div>`;
+}
+function buildLS(box){
+  box.innerHTML=`<div class="calc-layout"><div class="calc-inputs">
+    ${sf('lsAmt','Investment Amount','₹',10000,50000000,10000,500000)}
+    ${sf('lsR','Expected CAGR','%',1,30,0.5,12)}
+    ${sf('lsT','Time Period','Yr',1,30,1,10)}
+  </div><div class="calc-output">
+    <div class="donut-wrap"><canvas id="lsChart"></canvas><div class="donut-center"><div class="dc-val">—</div><div class="dc-label">Future Value</div></div></div>
+    <div class="chart-legend"><div class="cl-item"><div class="cl-dot" style="background:var(--accent)"></div>Principal</div><div class="cl-item"><div class="cl-dot" style="background:var(--gold)"></div>Returns</div></div>
+    <div class="results-table" id="lsResults"></div>
+  </div></div>`;
+}
+function buildRet(box){
+  box.innerHTML=`<div class="calc-layout"><div class="calc-inputs">
+    ${sf('retAge','Current Age','Yr',18,60,1,30)}
+    ${sf('retRetire','Retirement Age','Yr',40,70,1,60)}
+    ${sf('retExp','Monthly Expenses Today','₹',10000,500000,5000,50000)}
+    ${sf('retInf','Inflation Rate','%',2,12,0.5,6)}
+    ${sf('retRet','Post-Retirement Return','%',2,15,0.5,8)}
+  </div><div class="calc-output">
+    <div class="donut-wrap"><canvas id="retChart"></canvas><div class="donut-center"><div class="dc-val">—</div><div class="dc-label">Corpus Needed</div></div></div>
+    <div class="chart-legend"><div class="cl-item"><div class="cl-dot" style="background:var(--accent)"></div>Expenses (inflated)</div><div class="cl-item"><div class="cl-dot" style="background:var(--purple)"></div>Buffer</div></div>
+    <div class="results-table" id="retResults"></div>
+  </div></div>`;
+}
+function buildPPF(box){
+  box.innerHTML=`<div class="calc-layout"><div class="calc-inputs">
+    ${sf('ppfAmt','Yearly Deposit','₹',500,150000,500,150000)}
+    ${sf('ppfR','Interest Rate','%',1,10,0.1,7.1)}
+    ${sf('ppfT','Duration','Yr',15,50,1,15)}
+  </div><div class="calc-output">
+    <div class="donut-wrap"><canvas id="ppfChart"></canvas><div class="donut-center"><div class="dc-val">—</div><div class="dc-label">Maturity Value</div></div></div>
+    <div class="chart-legend"><div class="cl-item"><div class="cl-dot" style="background:var(--accent)"></div>Deposited</div><div class="cl-item"><div class="cl-dot" style="background:var(--gold)"></div>Interest</div></div>
+    <div class="results-table" id="ppfResults"></div>
+  </div></div>`;
+}
+function buildFD(box){
+  box.innerHTML=`<div class="calc-layout"><div class="calc-inputs">
+    ${sf('fdAmt','Deposit Amount','₹',10000,50000000,10000,500000)}
+    ${sf('fdR','Interest Rate','%',1,12,0.1,7)}
+    ${sf('fdT','Tenure','Yr',1,10,1,5)}
+    <div class="sf"><div class="sf-top"><span class="sf-label">Compounding</span></div><select id="fdComp" onchange="compute()"><option value="4">Quarterly</option><option value="2">Half-Yearly</option><option value="1">Annually</option></select></div>
+  </div><div class="calc-output">
+    <div class="donut-wrap"><canvas id="fdChart"></canvas><div class="donut-center"><div class="dc-val">—</div><div class="dc-label">Maturity Value</div></div></div>
+    <div class="chart-legend"><div class="cl-item"><div class="cl-dot" style="background:var(--accent)"></div>Principal</div><div class="cl-item"><div class="cl-dot" style="background:var(--gold)"></div>Interest</div></div>
+    <div class="results-table" id="fdResults"></div>
+  </div></div>`;
+}
+function buildGrat(box){
+  box.innerHTML=`<div class="calc-layout"><div class="calc-inputs">
+    ${sf('gratSal','Last Drawn Basic + DA','₹',10000,500000,5000,80000)}
+    ${sf('gratYr','Years of Service','Yr',1,40,1,12)}
+  </div><div class="calc-output">
+    <div class="donut-wrap"><canvas id="gratChart"></canvas><div class="donut-center"><div class="dc-val">—</div><div class="dc-label">Gratuity</div></div></div>
+    <div class="chart-legend"><div class="cl-item"><div class="cl-dot" style="background:var(--accent)"></div>Tax-Free</div><div class="cl-item"><div class="cl-dot" style="background:var(--red)"></div>Taxable</div></div>
+    <div class="results-table" id="gratResults"></div>
+  </div></div>`;
+}
+
+// ═══════ COMPUTE ═══════
+function compute(){
+  ({emi:compEMI,tax:compTax,sip:compSIP,lumpsum:compLS,retirement:compRet,ppf:compPPF,fd:compFD,gratuity:compGrat})[activeCalc]();
+}
+
+function compEMI(){
+  const P=+document.getElementById('emiP').value,r=+document.getElementById('emiR').value/1200,n=+document.getElementById('emiT').value*12;
+  if(!P||!r||!n)return;
+  const emi=P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1),total=emi*n,interest=total-P;
+  drawDonut('emiChart',[{val:P,color:'#34d399'},{val:interest,color:'#60a5fa'}],fmt(Math.round(emi)),'Monthly EMI');
+  document.getElementById('emiResults').innerHTML=`
+    <div class="rt-row rt-highlight"><span class="rt-label">Monthly EMI</span><span class="rt-val">${fmt(emi)}</span></div>
+    <div class="rt-row"><span class="rt-label">Principal amount</span><span class="rt-val">${fmt(P)}</span></div>
+    <div class="rt-row"><span class="rt-label">Total interest</span><span class="rt-val">${fmt(interest)}</span></div>
+    <div class="rt-row"><span class="rt-label">Total amount</span><span class="rt-val">${fmt(total)}</span></div>`;
+  // Amortization yearly
+  let bal=P,rows='';const years=+document.getElementById('emiT').value;
+  for(let y=1;y<=years;y++){let yp=0,yi=0;for(let m=0;m<12;m++){const mi=bal*r;const mp=emi-mi;yp+=mp;yi+=mi;bal-=mp;}
+    rows+=`<tr><td>Year ${y}</td><td>${fmt(yp)}</td><td>${fmt(yi)}</td><td>${fmt(Math.max(0,bal))}</td></tr>`;}
+  document.getElementById('emiAmort').innerHTML=`<table><thead><tr><th>Year</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function compTax(){
+  const income=+document.getElementById('taxIncome').value,c80c=+document.getElementById('tax80C').value,c80d=+document.getElementById('tax80D').value,hra=+document.getElementById('taxHRA').value;
+  const oldTax=taxOld(Math.max(0,income-50000-c80c-c80d-hra)),newTax=taxNew(Math.max(0,income-75000));
+  const better=newTax<=oldTax?'New':'Old',saving=Math.abs(oldTax-newTax);
+  drawDonut('taxChart',[{val:Math.max(oldTax,1),color:'#34d399'},{val:Math.max(newTax,1),color:'#60a5fa'}],better+' Regime','saves '+fmt(saving));
+  document.getElementById('taxResults').innerHTML=`
+    <div class="rt-row"><span class="rt-label">Old Regime Tax</span><span class="rt-val">${fmt(oldTax)}</span></div>
+    <div class="rt-row"><span class="rt-label">New Regime Tax</span><span class="rt-val">${fmt(newTax)}</span></div>
+    <div class="rt-row rt-highlight"><span class="rt-label">You save</span><span class="rt-val">${fmt(saving)} with ${better}</span></div>`;
+}
+function taxOld(t){let x=0;if(t>1000000)x+=(t-1000000)*.3;t=Math.min(t,1000000);if(t>500000)x+=(t-500000)*.2;t=Math.min(t,500000);if(t>250000)x+=(t-250000)*.05;return x+x*.04}
+function taxNew(t){const s=[[400000,0],[800000,.05],[1200000,.1],[1600000,.15],[2000000,.2],[2400000,.25],[1e15,.3]];let x=0,p=0;for(const[l,r]of s){if(t<=p)break;x+=(Math.min(t,l)-p)*r;p=l;}if(t<=1200000)x=0;return x+x*.04}
+
+function compSIP(){
+  const P=+document.getElementById('sipAmt').value,r=+document.getElementById('sipR').value/1200,n=+document.getElementById('sipT').value*12;
+  const fv=r>0?P*(((Math.pow(1+r,n)-1)/r)*(1+r)):P*n,inv=P*n,gains=fv-inv;
+  drawDonut('sipChart',[{val:inv,color:'#34d399'},{val:gains,color:'#f5c842'}],fmt(fv),'Maturity Value');
+  document.getElementById('sipResults').innerHTML=`
+    <div class="rt-row rt-highlight"><span class="rt-label">Maturity Value</span><span class="rt-val">${fmt(fv)}</span></div>
+    <div class="rt-row"><span class="rt-label">Total Invested</span><span class="rt-val">${fmt(inv)}</span></div>
+    <div class="rt-row"><span class="rt-label">Wealth Gained</span><span class="rt-val" style="color:var(--accent)">${fmt(gains)}</span></div>`;
+}
+function compLS(){
+  const P=+document.getElementById('lsAmt').value,r=+document.getElementById('lsR').value/100,n=+document.getElementById('lsT').value;
+  const fv=P*Math.pow(1+r,n),gains=fv-P;
+  drawDonut('lsChart',[{val:P,color:'#34d399'},{val:gains,color:'#f5c842'}],fmt(fv),'Future Value');
+  document.getElementById('lsResults').innerHTML=`
+    <div class="rt-row rt-highlight"><span class="rt-label">Future Value</span><span class="rt-val">${fmt(fv)}</span></div>
+    <div class="rt-row"><span class="rt-label">Invested</span><span class="rt-val">${fmt(P)}</span></div>
+    <div class="rt-row"><span class="rt-label">Total Returns</span><span class="rt-val" style="color:var(--accent)">${fmt(gains)}</span></div>`;
+}
+function compRet(){
+  const age=+document.getElementById('retAge').value,retA=+document.getElementById('retRetire').value,exp=+document.getElementById('retExp').value;
+  const inf=+document.getElementById('retInf').value/100,ret=+document.getElementById('retRet').value/100;
+  if(retA<=age)return;const yrs=retA-age,retYrs=25;
+  const futM=exp*Math.pow(1+inf,yrs),futA=futM*12,rr=(ret-inf)/(1+inf);
+  const corpus=rr>0?futA*(1-Math.pow(1+rr,-retYrs))/rr:futA*retYrs;
+  drawDonut('retChart',[{val:futA*retYrs,color:'#34d399'},{val:Math.max(0,corpus-futA*retYrs),color:'#a78bfa'}],fmt(corpus),'Corpus Needed');
+  document.getElementById('retResults').innerHTML=`
+    <div class="rt-row rt-highlight"><span class="rt-label">Corpus Needed</span><span class="rt-val">${fmt(corpus)}</span></div>
+    <div class="rt-row"><span class="rt-label">Monthly Expense at Retirement</span><span class="rt-val">${fmt(futM)}</span></div>
+    <div class="rt-row"><span class="rt-label">Years to Retire</span><span class="rt-val">${yrs} years</span></div>`;
+}
+function compPPF(){
+  const P=+document.getElementById('ppfAmt').value,r=+document.getElementById('ppfR').value/100,n=+document.getElementById('ppfT').value;
+  let bal=0;for(let i=0;i<n;i++)bal=(bal+P)*(1+r);
+  const inv=P*n,interest=bal-inv;
+  drawDonut('ppfChart',[{val:inv,color:'#34d399'},{val:interest,color:'#f5c842'}],fmt(bal),'Maturity Value');
+  document.getElementById('ppfResults').innerHTML=`
+    <div class="rt-row rt-highlight"><span class="rt-label">Maturity Value</span><span class="rt-val">${fmt(bal)}</span></div>
+    <div class="rt-row"><span class="rt-label">Total Deposited</span><span class="rt-val">${fmt(inv)}</span></div>
+    <div class="rt-row"><span class="rt-label">Interest Earned</span><span class="rt-val" style="color:var(--accent)">${fmt(interest)}</span></div>
+    <div class="rt-row"><span class="rt-label">Tax on Returns</span><span class="rt-val" style="color:var(--accent)">₹0 (EEE exempt)</span></div>`;
+}
+function compFD(){
+  const P=+document.getElementById('fdAmt').value,r=+document.getElementById('fdR').value/100,n=+document.getElementById('fdT').value,c=+document.getElementById('fdComp').value;
+  const fv=P*Math.pow(1+r/c,c*n),interest=fv-P;
+  drawDonut('fdChart',[{val:P,color:'#34d399'},{val:interest,color:'#f5c842'}],fmt(fv),'Maturity Value');
+  document.getElementById('fdResults').innerHTML=`
+    <div class="rt-row rt-highlight"><span class="rt-label">Maturity Value</span><span class="rt-val">${fmt(fv)}</span></div>
+    <div class="rt-row"><span class="rt-label">Principal</span><span class="rt-val">${fmt(P)}</span></div>
+    <div class="rt-row"><span class="rt-label">Interest Earned</span><span class="rt-val" style="color:var(--accent)">${fmt(interest)}</span></div>`;
+}
+function compGrat(){
+  const sal=+document.getElementById('gratSal').value,yrs=+document.getElementById('gratYr').value;
+  if(yrs<5){document.getElementById('gratResults').innerHTML=`<div class="rt-row"><span class="rt-label" style="color:var(--red)">Minimum 5 years required</span><span class="rt-val">—</span></div>`;drawDonut('gratChart',[{val:1,color:'#1a4a2e'}],'—','Min 5 yrs');return;}
+  const g=(sal*15*yrs)/26,tf=Math.min(g,2000000),tx=Math.max(0,g-2000000);
+  drawDonut('gratChart',[{val:tf,color:'#34d399'},{val:Math.max(tx,1),color:'#ef4444'}],fmt(g),'Gratuity');
+  document.getElementById('gratResults').innerHTML=`
+    <div class="rt-row rt-highlight"><span class="rt-label">Gratuity Amount</span><span class="rt-val">${fmt(g)}</span></div>
+    <div class="rt-row"><span class="rt-label">Tax-Free (up to ₹20L)</span><span class="rt-val" style="color:var(--accent)">${fmt(tf)}</span></div>
+    ${tx>0?`<div class="rt-row"><span class="rt-label">Taxable</span><span class="rt-val" style="color:var(--red)">${fmt(tx)}</span></div>`:''}
+    <div class="rt-row"><span class="rt-label">Formula</span><span class="rt-val" style="font-size:.78rem">(Basic × 15 × Yrs) / 26</span></div>`;
+}
+
+// Init — read ?calc= URL param for deep-linking from Knowledge Repo
+const urlCalc=new URLSearchParams(window.location.search).get('calc');
+const initCalc=CALCS.some(c=>c.id===urlCalc)?urlCalc:'emi';
+switchCalc(initCalc);
+const navEl=document.getElementById('nav');
+window.addEventListener('scroll',()=>navEl.classList.toggle('scrolled',window.scrollY>50));
+</script>
+</body>
+</html>

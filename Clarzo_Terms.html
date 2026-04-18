@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms & Conditions — Clarzo.ai</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#040f0a;--surface:#071a10;--surface2:#0c2418;--card:#102e1e;--border:#1a4a2e;
+  --text:#e4f0e8;--text-dim:#88b098;--accent:#34d399;--accent2:#6ee7b7;--accent-deep:#059669;
+  --gold:#f5c842;--amber:#f59e0b;--red:#ef4444;--blue:#60a5fa;--purple:#a78bfa;
+  --font-display:'Playfair Display',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.bg-atmosphere{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.bg-atmosphere::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 90% 50% at 20% 0%,rgba(5,150,105,.09),transparent),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(52,211,153,.05),transparent),linear-gradient(var(--bg),var(--bg))}
+.bg-atmosphere::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(52,211,153,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(52,211,153,.02) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 60% at 50% 20%,#000 20%,transparent 80%)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 0;transition:all .4s;backdrop-filter:blur(20px);background:rgba(4,15,10,.6);border-bottom:1px solid transparent}
+nav.scrolled{background:rgba(4,15,10,.92);border-bottom-color:var(--border)}
+nav .container{display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--font-display);font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:0;color:var(--text)}
+.logo:hover{text-decoration:none}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:36px;font-size:.9rem;font-weight:500}
+.nav-links a{color:var(--text-dim);transition:color .3s;text-decoration:none}
+.nav-links a:hover{color:var(--text);text-decoration:none}
+.nav-cta{display:flex;align-items:center;gap:12px}
+.nav-cta .btn{padding:10px 24px;font-size:.85rem;text-decoration:none}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:50px;font-family:var(--font-body);font-weight:600;font-size:.95rem;border:none;cursor:pointer;transition:all .35s ease;text-decoration:none}
+.btn-primary{background:var(--accent-deep);color:#fff;box-shadow:0 0 30px rgba(5,150,105,.3)}
+.btn-primary:hover{background:#047857;text-decoration:none}
+.btn-outline{background:transparent;color:var(--text);border:1.5px solid var(--border)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+@media(max-width:768px){.nav-links{display:none}.nav-cta .btn-outline{display:none}}
+
+.page-hero{padding:150px 0 60px;text-align:center;position:relative}
+.page-hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+.page-hero h1{font-family:var(--font-display);font-size:clamp(2.2rem,4.5vw,3.4rem);font-weight:600;line-height:1.15;margin-bottom:16px}
+.page-hero p{color:var(--text-dim);font-size:1.05rem;line-height:1.75;max-width:600px;margin:0 auto 20px}
+.page-hero .updated{font-size:.8rem;color:var(--text-dim);opacity:.6}
+
+.page-nav{position:sticky;top:68px;z-index:50;background:rgba(4,15,10,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:12px 0}
+.page-nav-inner{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.page-nav-inner::-webkit-scrollbar{height:0}
+.pn-link{padding:8px 18px;border-radius:10px;font-size:.82rem;font-weight:500;color:var(--text-dim);background:var(--surface);border:1px solid var(--border);white-space:nowrap;transition:all .3s;text-decoration:none;flex-shrink:0}
+.pn-link:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+
+.legal-content{max-width:860px;margin:0 auto;padding:60px 24px 80px}
+.legal-section{margin-bottom:60px}
+.legal-section:last-child{margin-bottom:0}
+.ls-anchor{display:block;position:relative;top:-100px;visibility:hidden}
+.ls-title{font-family:var(--font-display);font-size:1.6rem;font-weight:600;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.ls-title .ls-icon{font-size:1.4rem}
+.ls-text{color:var(--text-dim);font-size:.92rem;line-height:1.8;margin-bottom:16px}
+.ls-text:last-child{margin-bottom:0}
+.ls-text strong{color:var(--text);font-weight:600}
+.ls-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin:16px 0}
+.ls-list li{display:flex;align-items:start;gap:12px;color:var(--text-dim);font-size:.9rem;line-height:1.7}
+.ls-list li::before{content:'•';color:var(--accent);font-weight:700;flex-shrink:0}
+.ls-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin:20px 0}
+.ls-card-title{font-weight:600;font-size:.9rem;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.ls-card-text{color:var(--text-dim);font-size:.85rem;line-height:1.7}
+.contact-card{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:16px;padding:32px;margin:24px 0;text-align:center}
+.contact-card h4{font-family:var(--font-display);font-size:1.1rem;font-weight:600;margin-bottom:8px}
+.contact-card p{color:var(--text-dim);font-size:.88rem;margin-bottom:4px}
+
+footer{border-top:1px solid var(--border);padding:60px 0 30px;color:var(--text-dim)}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand .logo{margin-bottom:14px}
+.footer-brand p{font-size:.85rem;line-height:1.7;max-width:280px}
+.footer-col h4{font-size:.8rem;text-transform:uppercase;letter-spacing:2px;color:var(--text);margin-bottom:16px;font-weight:600}
+.footer-col a{display:block;font-size:.85rem;margin-bottom:10px;color:var(--text-dim);transition:color .3s}
+.footer-col a:hover{color:var(--accent);text-decoration:none}
+.footer-social{display:flex;gap:12px;margin-top:20px}
+.footer-social a{width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .3s;text-decoration:none}
+.footer-social a:hover{border-color:var(--accent);color:var(--accent)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;font-size:.78rem;flex-wrap:wrap;gap:12px}
+@media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr;gap:30px}}
+@media(max-width:500px){.footer-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bg-atmosphere"></div>
+
+<nav id="nav">
+  <div class="container">
+    <a href="Clarzo_Landing_Page.html" class="logo">Clarzo<span>.ai</span></a>
+    <div class="nav-links">
+      <a href="Clarzo_Product_Page.html">Product</a>
+      <a href="Clarzo_Stock_Discovery.html">Discovery</a>
+      <a href="Clarzo_Knowledge_Repo.html">Knowledge</a>
+      <a href="Clarzo_About_Us.html">About Us</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#" class="btn btn-outline">Login</a>
+      <a href="#" class="btn btn-primary">Review My Portfolio</a>
+    </div>
+  </div>
+</nav>
+
+<section class="page-hero">
+  <div class="container">
+    <h1>Terms & Conditions</h1>
+    <p>Please read these terms carefully before using Clarzo.ai. By using our platform, you agree to be bound by these terms.</p>
+    <div class="updated">Last updated: April 15, 2026</div>
+  </div>
+</section>
+
+<div class="page-nav">
+  <div class="container">
+    <div class="page-nav-inner">
+      <a href="#acceptance" class="pn-link">Acceptance</a>
+      <a href="#services" class="pn-link">Services</a>
+      <a href="#accounts" class="pn-link">Accounts</a>
+      <a href="#not-advice" class="pn-link">Not Financial Advice</a>
+      <a href="#usage" class="pn-link">Acceptable Use</a>
+      <a href="#ip" class="pn-link">Intellectual Property</a>
+      <a href="#liability" class="pn-link">Liability</a>
+      <a href="#termination" class="pn-link">Termination</a>
+      <a href="#changes" class="pn-link">Changes</a>
+      <a href="#governing" class="pn-link">Governing Law</a>
+      <a href="#tc-contact" class="pn-link">Contact</a>
+    </div>
+  </div>
+</div>
+
+<div class="legal-content">
+
+  <!-- 1. Acceptance -->
+  <div class="legal-section">
+    <span class="ls-anchor" id="acceptance"></span>
+    <div class="ls-title"><span class="ls-icon">📜</span> 1. Acceptance of Terms</div>
+    <p class="ls-text">By accessing or using Clarzo.ai ("the Platform"), you agree to be bound by these Terms and Conditions ("Terms"), our <a href="Clarzo_Privacy_Security.html">Privacy Policy</a>, and any additional terms that may apply to specific features of the Platform.</p>
+    <p class="ls-text">If you do not agree to these Terms, you must not use the Platform. If you are using the Platform on behalf of an organization, you represent that you have the authority to bind that organization to these Terms.</p>
+    <p class="ls-text">You must be at least 18 years of age to use the Platform. By using Clarzo.ai, you confirm that you meet this age requirement.</p>
+  </div>
+
+  <!-- 2. Services -->
+  <div class="legal-section">
+    <span class="ls-anchor" id="services"></span>
+    <div class="ls-title"><span class="ls-icon">⚡</span> 2. Description of Services</div>
+    <p class="ls-text">Clarzo.ai provides an AI-powered wealth intelligence platform that offers:</p>
+    <ul class="ls-list">
+      <li><strong>Portfolio Aggregation:</strong> Connecting and displaying financial data from multiple sources in a unified dashboard</li>
+      <li><strong>AI-Powered Insights:</strong> Automated analysis of portfolio performance, risk, and allocation</li>
+      <li><strong>ClarzoGPT:</strong> A conversational AI assistant that answers questions about your financial data</li>
+      <li><strong>ClarzoGPT:</strong> A research tool providing company information based on publicly available financial data</li>
+      <li><strong>Goal Tracking:</strong> Tools to map investments against personal financial goals</li>
+      <li><strong>Spending Analysis:</strong> Categorization and analysis of bank transaction data</li>
+      <li><strong>Expert Connect:</strong> A marketplace connecting users with SEBI-registered financial advisors</li>
+      <li><strong>Stock Discovery:</strong> Educational tools for researching sectors and companies listed on BSE/NSE</li>
+    </ul>
+    <p class="ls-text">We reserve the right to modify, suspend, or discontinue any part of the Platform at any time with reasonable notice.</p>
+  </div>
+
+  <!-- 3. Accounts -->
+  <div class="legal-section">
+    <span class="ls-anchor" id="accounts"></span>
+    <div class="ls-title"><span class="ls-icon">👤</span> 3. User Accounts</div>
+    <p class="ls-text">To access certain features, you must create an account. You agree to:</p>
+    <ul class="ls-list">
+      <li>Provide accurate, current, and complete information during registration</li>
+      <li>Maintain and update your information to keep it accurate</li>
+      <li>Keep your login credentials secure and confidential</li>
+      <li>Notify us immediately of any unauthorized access to your account</li>
+      <li>Accept responsibility for all activities that occur under your account</li>
+    </ul>
+    <p class="ls-text">We reserve the right to suspend or terminate accounts that violate these Terms or engage in fraudulent activity.</p>
+  </div>
+
+  <!-- 4. Not Financial Advice -->
+  <div class="legal-section">
+    <span class="ls-anchor" id="not-advice"></span>
+    <div class="ls-title"><span class="ls-icon">⚠️</span> 4. Not Financial Advice</div>
+    <div class="ls-card" style="border-color:var(--amber)">
+      <div class="ls-card-title" style="color:var(--amber)">⚠️ Important Disclaimer</div>
+      <div class="ls-card-text"><strong>Clarzo.ai does not provide financial advice, investment advice, tax advice, or legal advice.</strong> All information, insights, suggestions, and recommendations provided through the Platform — including ClarzoGPT, ClarzoGPT, rebalancing suggestions, and stock discovery — are for <strong>educational and informational purposes only</strong>.</div>
+    </div>
+    <p class="ls-text">Specifically:</p>
+    <ul class="ls-list">
+      <li>Rebalancing suggestions are educational in nature and should not be construed as investment recommendations</li>
+      <li>ClarzoGPT and ClarzoGPT responses are generated by AI and may contain inaccuracies — always verify with official sources</li>
+      <li>Stock Discovery content reflects publicly available data and does not constitute a buy/sell recommendation</li>
+      <li>Past performance data displayed on the Platform does not guarantee future results</li>
+      <li>You should consult a qualified financial advisor before making investment decisions</li>
+    </ul>
+    <p class="ls-text"><strong>Clarzo.ai is an intelligence and aggregation layer — not a transaction platform.</strong> We do not execute trades, manage funds, or move money on your behalf.</p>
+  </div>
+
+  <!-- 5. Acceptable Use -->
+  <div class="legal-section">
+    <span class="ls-anchor" id="usage"></span>
+    <div class="ls-title"><span class="ls-icon">✅</span> 5. Acceptable Use</div>
+    <p class="ls-text">You agree to use the Platform only for lawful purposes. You must not:</p>
+    <ul class="ls-list">
+      <li>Use the Platform to engage in any illegal activity or violate any applicable laws</li>
+      <li>Attempt to gain unauthorized access to other users' accounts or data</li>
+      <li>Use automated tools (bots, scrapers) to extract data from the Platform without permission</li>
+      <li>Reverse engineer, decompile, or disassemble any part of the Platform</li>
+      <li>Upload malicious code, viruses, or any harmful content</li>
+      <li>Share your account credentials with third parties or allow others to access your account</li>
+      <li>Use ClarzoGPT or Stock Discovery data to provide unauthorized financial advisory services</li>
+      <li>Misrepresent your identity or provide false information</li>
+    </ul>
+  </div>
+
+  <!-- 6. IP -->
+  <div class="legal-section">
+    <span class="ls-anchor" id="ip"></span>
+    <div class="ls-title"><span class="ls-icon">©️</span> 6. Intellectual Property</div>
+    <p class="ls-text">All content, features, and functionality of the Platform — including text, graphics, logos, icons, AI models, algorithms, software, and design — are owned by Clarzo.ai and protected by intellectual property laws.</p>
+    <p class="ls-text"><strong>Your Data:</strong> You retain full ownership of your personal and financial data. By using the Platform, you grant us a limited, non-exclusive license to process your data solely for providing our services to you. This license ends when you delete your account.</p>
+    <p class="ls-text"><strong>Feedback:</strong> If you provide suggestions, feature requests, or feedback, you grant us the right to use this feedback for product improvement without obligation to you.</p>
+  </div>
+
+  <!-- 7. Liability -->
+  <div class="legal-section">
+    <span class="ls-anchor" id="liability"></span>
+    <div class="ls-title"><span class="ls-icon">⚖️</span> 7. Limitation of Liability</div>
+    <p class="ls-text">To the maximum extent permitted by law:</p>
+    <ul class="ls-list">
+      <li>Clarzo.ai is provided "as is" and "as available" without warranties of any kind, express or implied</li>
+      <li>We do not guarantee the accuracy, completeness, or timeliness of financial data displayed on the Platform</li>
+      <li>We are not responsible for investment decisions you make based on information from the Platform</li>
+      <li>We are not liable for any losses, damages, or costs arising from the use of the Platform, including but not limited to financial losses from investment decisions</li>
+      <li>Our total liability for any claims arising from these Terms shall not exceed the amount you paid to us in the 12 months preceding the claim</li>
+    </ul>
+    <p class="ls-text"><strong>Data Accuracy:</strong> While we strive for accuracy, financial data aggregated from third-party sources may contain delays, errors, or omissions. Always verify critical information with your broker, bank, or official sources.</p>
+  </div>
+
+  <!-- 8. Termination -->
+  <div class="legal-section">
+    <span class="ls-anchor" id="termination"></span>
+    <div class="ls-title"><span class="ls-icon">🚫</span> 8. Termination</div>
+    <p class="ls-text"><strong>By You:</strong> You may delete your account at any time through the Platform settings. Upon deletion, all your personal and financial data will be permanently removed within 30 days, as outlined in our <a href="Clarzo_Privacy_Security.html">Privacy Policy</a>.</p>
+    <p class="ls-text"><strong>By Us:</strong> We may suspend or terminate your access if you violate these Terms, engage in fraudulent activity, or if we are required to do so by law. We will provide reasonable notice when possible.</p>
+    <p class="ls-text"><strong>Effect of Termination:</strong> Upon termination, your right to access the Platform ceases immediately. Sections of these Terms that by their nature should survive (such as Limitation of Liability, Intellectual Property, and Governing Law) will continue to apply.</p>
+  </div>
+
+  <!-- 9. Changes -->
+  <div class="legal-section">
+    <span class="ls-anchor" id="changes"></span>
+    <div class="ls-title"><span class="ls-icon">🔄</span> 9. Changes to Terms</div>
+    <p class="ls-text">We may update these Terms from time to time. When we make material changes:</p>
+    <ul class="ls-list">
+      <li>We will notify you via email or a prominent notice on the Platform at least 30 days before changes take effect</li>
+      <li>The "Last updated" date at the top of this page will be revised</li>
+      <li>Continued use of the Platform after changes take effect constitutes acceptance of the updated Terms</li>
+      <li>If you do not agree to the updated Terms, you should stop using the Platform and delete your account</li>
+    </ul>
+  </div>
+
+  <!-- 10. Governing Law -->
+  <div class="legal-section">
+    <span class="ls-anchor" id="governing"></span>
+    <div class="ls-title"><span class="ls-icon">🏛️</span> 10. Governing Law & Disputes</div>
+    <p class="ls-text">These Terms are governed by and construed in accordance with the laws of India. Any disputes arising from these Terms or the use of the Platform shall be subject to the exclusive jurisdiction of the courts in Mumbai, Maharashtra, India.</p>
+    <p class="ls-text">Before initiating any legal proceedings, both parties agree to attempt resolution through good-faith negotiation for a period of at least 30 days.</p>
+  </div>
+
+  <!-- 11. Contact -->
+  <div class="legal-section">
+    <span class="ls-anchor" id="tc-contact"></span>
+    <div class="ls-title"><span class="ls-icon">📬</span> 11. Contact</div>
+    <p class="ls-text">If you have questions about these Terms & Conditions, please reach out:</p>
+    <div class="contact-card">
+      <h4>Clarzo.ai Legal Team</h4>
+      <p>📧 <a href="mailto:contact@clarzo.ai">contact@clarzo.ai</a></p>
+      <p style="margin-top:12px;font-size:.82rem;color:var(--text-dim)">For all legal, privacy, and general inquiries.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">Clarzo<span>.ai</span></div>
+        <p>Your AI-powered wealth partner — helping you track, plan, and grow your money with personalized insights and smarter financial decisions.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+          <a href="#" aria-label="X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col"><h4>Explore</h4><a href="Clarzo_Knowledge_Repo.html">Knowledge Repo</a><a href="Clarzo_Calculators.html">Calculators</a><a href="Clarzo_About_Us.html">About Us</a><a href="Clarzo_Landing_Page.html#faq">FAQ</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="Clarzo_Privacy_Security.html">Privacy & Security</a><a href="Clarzo_Terms.html">Terms & Conditions</a></div>
+      <div class="footer-col"><h4>Get Started</h4><a href="#">Login</a><a href="#">Review Portfolio</a><a href="#">Talk to Expert</a></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2021–2025 Clarzo. All Rights Reserved | Made with ❤️</span>
+      <span>Your money deserves better.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>50)});
+</script>
+</body>
+</html>

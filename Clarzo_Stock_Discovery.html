@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Discovery — Clarzo.ai</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#040f0a;--surface:#071a10;--surface2:#0c2418;--card:#102e1e;--border:#1a4a2e;
+  --text:#e4f0e8;--text-dim:#88b098;--accent:#34d399;--accent2:#6ee7b7;--accent-deep:#059669;
+  --gold:#f5c842;--amber:#f59e0b;--red:#ef4444;--blue:#60a5fa;--purple:#a78bfa;
+  --font-display:'Playfair Display',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.bg-atmosphere{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.bg-atmosphere::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 90% 50% at 20% 0%,rgba(5,150,105,.09),transparent),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(52,211,153,.05),transparent),linear-gradient(var(--bg),var(--bg))}
+.bg-atmosphere::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(52,211,153,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(52,211,153,.02) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 60% at 50% 20%,#000 20%,transparent 80%)}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 0;transition:all .4s;backdrop-filter:blur(20px);background:rgba(4,15,10,.6);border-bottom:1px solid transparent}
+nav.scrolled{background:rgba(4,15,10,.92);border-bottom-color:var(--border)}
+nav .container{display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--font-display);font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:0}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:36px;font-size:.9rem;font-weight:500}
+.nav-links a{color:var(--text-dim);transition:color .3s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-cta{display:flex;align-items:center;gap:12px}
+.nav-cta .btn{padding:10px 24px;font-size:.85rem}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:50px;font-family:var(--font-body);font-weight:600;font-size:.95rem;border:none;cursor:pointer;transition:all .35s ease}
+.btn-primary{background:var(--accent-deep);color:#fff;box-shadow:0 0 30px rgba(5,150,105,.3)}
+.btn-primary:hover{background:#047857;box-shadow:0 0 50px rgba(5,150,105,.45);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--text);border:1.5px solid var(--border)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:768px){.nav-links{display:none}.nav-cta .btn-outline{display:none}}
+
+/* Page Hero */
+.page-hero{padding:140px 0 60px;text-align:center}
+.page-hero h1{font-family:var(--font-display);font-size:clamp(2.2rem,4.5vw,3.4rem);font-weight:600;line-height:1.15;margin-bottom:16px}
+.page-hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.page-hero p{color:var(--text-dim);font-size:1.05rem;line-height:1.75;max-width:600px;margin:0 auto 24px}
+.disclaimer{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:.78rem;color:var(--text-dim);margin-bottom:20px}
+.disclaimer .d-icon{color:var(--amber)}
+
+/* Search */
+.search-bar{max-width:600px;margin:0 auto 0;position:relative}
+.search-bar input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 20px 16px 48px;font-size:.92rem;color:var(--text);font-family:var(--font-body);outline:none;transition:border-color .3s}
+.search-bar input::placeholder{color:var(--text-dim)}
+.search-bar input:focus{border-color:var(--accent)}
+.search-bar .s-icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:1rem}
+
+/* Breadcrumb */
+.breadcrumb{padding:20px 0;font-size:.82rem;color:var(--text-dim);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.breadcrumb a{color:var(--accent);transition:opacity .2s}
+.breadcrumb a:hover{opacity:.8}
+.breadcrumb .sep{opacity:.4}
+
+/* ── VIEW: Sectors ── */
+.sectors-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:40px 0 80px}
+.sector-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;cursor:pointer;transition:all .35s ease;position:relative;overflow:hidden}
+.sector-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 40px rgba(5,150,105,.1)}
+.sector-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(52,211,153,.3),transparent);opacity:0;transition:opacity .3s}
+.sector-card:hover::before{opacity:1}
+.sc-top{display:flex;justify-content:space-between;align-items:start;margin-bottom:12px}
+.sc-meta{display:flex;gap:8px;align-items:center}
+.sc-views{font-size:.72rem;color:var(--text-dim);display:flex;align-items:center;gap:4px}
+.sc-trending{background:rgba(52,211,153,.1);color:var(--accent);font-size:.65rem;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.8px}
+.sc-emoji{font-size:1.6rem;opacity:.4}
+.sc-name{font-family:var(--font-display);font-size:1.1rem;font-weight:600;margin-bottom:6px}
+.sc-desc{font-size:.8rem;color:var(--text-dim);line-height:1.6;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.sc-bottom{display:flex;justify-content:space-between;align-items:center;font-size:.75rem;color:var(--text-dim)}
+.sc-count{display:flex;align-items:center;gap:4px}
+.sc-updated{display:flex;align-items:center;gap:4px}
+.sc-updated .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+@media(max-width:900px){.sectors-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.sectors-grid{grid-template-columns:1fr}}
+
+/* ── VIEW: Companies ── */
+.view-companies{display:none}
+.sector-header{padding:30px 0 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.sh-info h2{font-family:var(--font-display);font-size:1.6rem;font-weight:600;margin-bottom:4px}
+.sh-info p{font-size:.85rem;color:var(--text-dim)}
+.sh-stats{display:flex;gap:16px}
+.sh-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;text-align:center}
+.sh-stat .ss-val{font-family:var(--font-display);font-size:1.1rem;font-weight:700}
+.sh-stat .ss-label{font-size:.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+/* Sector overview */
+.sector-overview{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px}
+.so-title{font-size:.78rem;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}
+.so-text{font-size:.88rem;color:var(--text-dim);line-height:1.7;margin-bottom:16px}
+.so-pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.so-col h4{font-size:.78rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.so-col.pros h4{color:var(--accent)}
+.so-col.cons h4{color:var(--red)}
+.so-col ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.so-col ul li{font-size:.82rem;color:var(--text-dim);line-height:1.5;display:flex;align-items:start;gap:8px}
+.so-col.pros ul li::before{content:'↑';color:var(--accent);font-weight:700;flex-shrink:0}
+.so-col.cons ul li::before{content:'↓';color:var(--red);font-weight:700;flex-shrink:0}
+@media(max-width:600px){.so-pros-cons{grid-template-columns:1fr}}
+
+.companies-list{display:flex;flex-direction:column;gap:8px;padding-bottom:60px}
+.company-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;cursor:pointer;transition:all .3s}
+.company-row:hover{border-color:var(--accent);transform:translateX(3px)}
+.cr-name{display:flex;align-items:center;gap:12px}
+.cr-avatar{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;color:var(--bg);flex-shrink:0}
+.cr-title{font-weight:600;font-size:.9rem}
+.cr-sub{font-size:.72rem;color:var(--text-dim)}
+.cr-val{font-size:.88rem;font-weight:600;text-align:right}
+.cr-change{font-size:.82rem;font-weight:600;text-align:right}
+.cr-mcap{font-size:.82rem;color:var(--text-dim);text-align:right}
+.cr-arrow{color:var(--text-dim);font-size:.9rem;transition:color .3s}
+.company-row:hover .cr-arrow{color:var(--accent)}
+.green{color:var(--accent)}.red{color:var(--red)}
+@media(max-width:768px){.company-row{grid-template-columns:2fr 1fr 1fr;}.cr-mcap,.cr-arrow{display:none}}
+
+/* ── VIEW: Company Detail ── */
+.view-detail{display:none}
+.detail-header{padding:30px 0 20px}
+.dh-top{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.dh-avatar{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;color:var(--bg);flex-shrink:0}
+.dh-info h2{font-family:var(--font-display);font-size:1.8rem;font-weight:600}
+.dh-info .dh-sub{font-size:.85rem;color:var(--text-dim)}
+.dh-metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+.dh-metric{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.dm-val{font-family:var(--font-display);font-size:1.2rem;font-weight:700;margin-bottom:2px}
+.dm-label{font-size:.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
+@media(max-width:768px){.dh-metrics{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:500px){.dh-metrics{grid-template-columns:1fr 1fr}}
+
+/* Company Tabs */
+.detail-tabs{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap}
+.d-tab{padding:8px 18px;border-radius:10px;font-size:.82rem;font-weight:500;color:var(--text-dim);background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:all .3s}
+.d-tab.active,.d-tab:hover{background:var(--accent-deep);color:#fff;border-color:var(--accent-deep)}
+
+.detail-content{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding-bottom:60px}
+.detail-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px}
+.dp-title{font-size:.78rem;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px}
+
+/* About panel */
+.about-text{font-size:.88rem;color:var(--text-dim);line-height:1.75;margin-bottom:16px}
+.key-facts{display:flex;flex-direction:column;gap:8px}
+.kf-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.84rem}
+.kf-row:last-child{border:none}
+.kf-row .kf-label{color:var(--text-dim)}
+.kf-row .kf-val{font-weight:600}
+
+/* Pros Cons panel */
+.pc-section{margin-bottom:20px}
+.pc-section:last-child{margin-bottom:0}
+.pc-section h4{font-size:.82rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.pc-section.pros h4{color:var(--accent)}
+.pc-section.cons h4{color:var(--red)}
+.pc-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.pc-list li{font-size:.84rem;color:var(--text-dim);line-height:1.6;display:flex;align-items:start;gap:10px;padding:8px 12px;background:var(--surface2);border-radius:8px}
+.pc-list li .pc-icon{flex-shrink:0;margin-top:2px}
+.pros .pc-icon{color:var(--accent)}
+.cons .pc-icon{color:var(--red)}
+
+/* CompanyGPT */
+.company-gpt{grid-column:1/-1}
+.gpt-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative}
+.gpt-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.gpt-header .gpt-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent-deep),var(--accent));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.gpt-header .gpt-title{font-weight:600;font-size:.95rem}
+.gpt-header .gpt-sub{font-size:.72rem;color:var(--text-dim)}
+.gpt-suggestions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.gpt-sug{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:.78rem;color:var(--text-dim);cursor:pointer;transition:all .3s}
+.gpt-sug:hover{border-color:var(--accent);color:var(--accent)}
+.gpt-chat{display:flex;flex-direction:column;gap:12px;max-height:400px;overflow-y:auto;margin-bottom:16px;padding-right:8px}
+.gpt-chat::-webkit-scrollbar{width:4px}
+.gpt-chat::-webkit-scrollbar-track{background:transparent}
+.gpt-chat::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.gpt-msg{max-width:85%;padding:12px 16px;border-radius:14px;font-size:.84rem;line-height:1.6}
+.gpt-msg-user{align-self:flex-end;background:var(--accent-deep);color:#fff;border-bottom-right-radius:4px}
+.gpt-msg-ai{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);border-bottom-left-radius:4px;color:var(--text-dim)}
+.gpt-msg-ai .gpt-tag{font-size:.6rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:5px;font-weight:600}
+.gpt-msg-ai .gpt-source{font-size:.68rem;color:var(--text-dim);opacity:.7;margin-top:8px;font-style:italic}
+.gpt-input-row{display:flex;gap:10px}
+.gpt-input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:.86rem;color:var(--text);font-family:var(--font-body);outline:none;transition:border-color .3s}
+.gpt-input:focus{border-color:var(--accent)}
+.gpt-input::placeholder{color:var(--text-dim)}
+.gpt-send{background:var(--accent-deep);color:#fff;border:none;border-radius:12px;padding:12px 20px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .3s;font-family:var(--font-body)}
+.gpt-send:hover{background:#047857}
+.gpt-disclaimer{font-size:.7rem;color:var(--text-dim);opacity:.6;margin-top:12px;text-align:center}
+
+/* CTA Banner */
+.cta-banner{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:16px;padding:32px;text-align:center;margin:40px 0 60px}
+.cta-banner h3{font-family:var(--font-display);font-size:1.3rem;font-weight:600;margin-bottom:8px}
+.cta-banner p{font-size:.88rem;color:var(--text-dim);margin-bottom:20px}
+
+@media(max-width:900px){.detail-content{grid-template-columns:1fr}}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:60px 0 30px;color:var(--text-dim)}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand .logo{margin-bottom:14px}
+.footer-brand p{font-size:.85rem;line-height:1.7;max-width:280px}
+.footer-col h4{font-size:.8rem;text-transform:uppercase;letter-spacing:2px;color:var(--text);margin-bottom:16px;font-weight:600}
+.footer-col a{display:block;font-size:.85rem;margin-bottom:10px;color:var(--text-dim);transition:color .3s}
+.footer-col a:hover{color:var(--accent)}
+.footer-social{display:flex;gap:12px;margin-top:20px}
+.footer-social a{width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .3s}
+.footer-social a:hover{border-color:var(--accent);color:var(--accent)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;font-size:.78rem;flex-wrap:wrap;gap:12px}
+@media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr;gap:30px}}
+@media(max-width:500px){.footer-grid{grid-template-columns:1fr}}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="bg-atmosphere"></div>
+
+<nav id="nav">
+  <div class="container">
+    <a href="Clarzo_Landing_Page.html" class="logo">Clarzo<span>.ai</span></a>
+    <div class="nav-links">
+      <a href="Clarzo_Product_Page.html">Product</a>
+      <a href="Clarzo_Stock_Discovery.html" class="active">Discovery</a>
+      <a href="Clarzo_Knowledge_Repo.html">Knowledge</a>
+      <a href="Clarzo_About_Us.html">About Us</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#" class="btn btn-outline">Login</a>
+      <a href="#" class="btn btn-primary">Review My Portfolio</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Page Hero -->
+<section class="page-hero">
+  <div class="container">
+    <h1>Discover Where to <em>Invest</em></h1>
+    <p>Explore sectors, research companies, and make informed decisions. We show you the facts, the pros, and the cons — you decide what's right for you.</p>
+    <div class="disclaimer"><span class="d-icon">⚠️</span> This is for educational purposes only. Not investment advice. Always do your own research.</div>
+    <div class="search-bar">
+      <span class="s-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search sectors or companies..." oninput="handleSearch(this.value)">
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="breadcrumb" id="breadcrumb">
+    <a href="#" onclick="showSectors();return false">All Sectors</a>
+  </div>
+</div>
+
+<!-- ═══════ VIEW: Sectors Grid ═══════ -->
+<div class="container" id="viewSectors">
+  <div class="sectors-grid" id="sectorsGrid"></div>
+</div>
+
+<!-- ═══════ VIEW: Companies List ═══════ -->
+<div class="container view-companies" id="viewCompanies">
+  <div class="sector-header" id="sectorHeader"></div>
+  <div class="sector-overview" id="sectorOverview"></div>
+  <div class="companies-list" id="companiesList"></div>
+  <div class="cta-banner">
+    <h3>Researching investments? See how they fit your portfolio.</h3>
+    <p>Connect your existing portfolio and Clarzo.ai will show you how any new investment impacts your allocation, risk, and goals.</p>
+    <a href="#" class="btn btn-primary">Connect Portfolio — Free →</a>
+  </div>
+</div>
+
+<!-- ═══════ VIEW: Company Detail ═══════ -->
+<div class="container view-detail" id="viewDetail">
+  <div class="detail-header" id="detailHeader"></div>
+  <div class="detail-content" id="detailContent"></div>
+  <div class="cta-banner">
+    <h3>Like what you see? Check how it fits your portfolio.</h3>
+    <p>Already invested in this sector? Clarzo.ai shows your current exposure and suggests optimal allocation.</p>
+    <a href="#" class="btn btn-primary">Connect Portfolio — Free →</a>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">Clarzo<span>.ai</span></div>
+        <p>Your AI-powered wealth partner — helping you track, plan, and grow your money with personalized insights and smarter financial decisions.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+          <a href="#" aria-label="X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col"><h4>Explore</h4><a href="Clarzo_Knowledge_Repo.html">Knowledge Repo</a><a href="Clarzo_Calculators.html">Calculators</a><a href="Clarzo_About_Us.html">About Us</a><a href="Clarzo_Landing_Page.html#faq">FAQ</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="Clarzo_Privacy_Security.html">Privacy &amp; Security</a><a href="Clarzo_Terms.html">Terms &amp; Conditions</a></div>
+      <div class="footer-col"><h4>Get Started</h4><a href="#">Login</a><a href="#">Review Portfolio</a><a href="#">Talk to Expert</a></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2021–2025 Clarzo. All Rights Reserved | Made with ❤️</span>
+      <span>Your money deserves better.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ═══════ DATA ═══════
+const DATA={
+sectors:[
+  {id:'it',name:'Information Technology',emoji:'💻',desc:'Companies providing IT services, software products, cloud computing, and digital transformation solutions.',views:'4.2k',trending:true,companies:12,updated:'Apr 10, 2026',
+   overview:'India\'s IT sector remains a global powerhouse, contributing ~8% to GDP. Strong dollar earnings, digital adoption tailwinds, and AI integration are key growth drivers.',
+   pros:['Strong USD revenue hedge against rupee depreciation','High margins with asset-light business models','Growing demand for AI/ML and cloud services','Consistent dividend payers'],
+   cons:['Slowing growth in traditional services','Visa policy risks in US/Europe','High attrition rates increasing costs','Valuation premiums make entry timing important'],
+   cos:[
+     {name:'TCS',full:'Tata Consultancy Services',bse:'BSE:532540',price:'₹4,180',change:'+1.8%',up:true,mcap:'₹15.2L Cr',pe:'32.4',roe:'48.2%',div:'1.2%',rev:'₹2.41L Cr',about:'India\'s largest IT services company. Part of the Tata Group. Serves clients across banking, retail, manufacturing, and telecom globally.',facts:{Founded:'1968',Employees:'614,000+',HQ:'Mumbai',Sector:'IT Services'},pros:['Market leader with diversified client base','Strong order book and deal pipeline','Consistent dividend payouts','Low debt, high cash generation'],cons:['Premium valuation limits upside','Slower growth vs mid-cap IT peers','Dependence on BFSI sector','Attrition pressure on margins'],gptSugs:['What was TCS revenue growth last quarter?','How does TCS compare to Infosys?','What are the risks of investing in TCS?','What is TCS dividend history?']},
+     {name:'Infosys',full:'Infosys Limited',bse:'BSE:500209',price:'₹1,890',change:'+2.1%',up:true,mcap:'₹7.8L Cr',pe:'28.6',roe:'32.1%',div:'2.3%',rev:'₹1.62L Cr',about:'Second largest Indian IT company. Known for strong corporate governance and digital transformation capabilities.',facts:{Founded:'1981',Employees:'317,000+',HQ:'Bengaluru',Sector:'IT Services'},pros:['Strong digital revenue growth','Excellent corporate governance track record','Higher dividend yield than peers','AI and automation investments paying off'],cons:['Management transitions can create uncertainty','Lower margins than TCS','Client concentration risks','Growth guidance often conservative'],gptSugs:['What is Infosys guidance for FY27?','How is Infosys positioned in AI?','Infosys vs TCS — which is better?','What are Infosys quarterly results?']},
+     {name:'Wipro',full:'Wipro Limited',bse:'BSE:507685',price:'₹580',change:'-0.4%',up:false,mcap:'₹3.0L Cr',pe:'24.1',roe:'15.8%',div:'1.5%',rev:'₹90,500 Cr',about:'Third largest Indian IT company. Diversified across IT services, consulting, and business process services.',facts:{Founded:'1945',Employees:'234,000+',HQ:'Bengaluru',Sector:'IT Services'},pros:['Attractive valuation vs peers','Turnaround under new leadership','Strong consulting capabilities','Growing in cloud and cybersecurity'],cons:['Slower organic growth than peers','Multiple restructurings create uncertainty','Lower margins than TCS/Infosys','Market share loss in key verticals'],gptSugs:['Is Wipro a turnaround story?','Wipro margins vs industry average?','What is Wipro\'s cloud strategy?','Latest Wipro quarterly results?']}
+   ]},
+  {id:'banking',name:'Banking & Financial Services',emoji:'🏦',desc:'Banks, NBFCs, and financial institutions offering lending, deposits, insurance, and wealth management services.',views:'5.1k',trending:true,companies:15,updated:'Apr 12, 2026',
+   overview:'Indian banking is in a golden period — clean balance sheets, strong credit growth (15%+ YoY), and digital adoption. Private banks lead in technology while PSU banks show improving asset quality.',
+   pros:['Strong credit growth driven by consumption and infrastructure','Improving asset quality across the sector','Digital banking adoption accelerating','Net interest margins remain healthy'],
+   cons:['Rising interest rates may slow loan growth','Unsecured lending risks building up','Regulatory tightening on NBFCs','Global recession could impact corporate lending'],
+   cos:[
+     {name:'HDFC Bank',full:'HDFC Bank Limited',bse:'BSE:500180',price:'₹1,720',change:'+0.9%',up:true,mcap:'₹13.1L Cr',pe:'20.2',roe:'16.8%',div:'1.1%',rev:'₹2.85L Cr',about:'India\'s largest private sector bank by market cap. Known for consistent growth, strong asset quality, and technology-driven banking.',facts:{Founded:'1994',Employees:'213,000+',HQ:'Mumbai',Sector:'Private Banking'},pros:['Best-in-class asset quality (low NPAs)','Consistent 18-20% profit growth track record','Largest branch network among private banks','Strong deposit franchise and CASA ratio'],cons:['Post-merger integration with HDFC Ltd ongoing','Premium valuation leaves less room for error','Slowing growth in unsecured retail lending','Increasing competition from fintechs'],gptSugs:['How is HDFC Bank post-merger integration going?','HDFC Bank vs ICICI Bank comparison?','What are HDFC Bank NPA trends?','HDFC Bank dividend yield history?']},
+     {name:'ICICI Bank',full:'ICICI Bank Limited',bse:'BSE:532174',price:'₹1,280',change:'+1.5%',up:true,mcap:'₹9.0L Cr',pe:'18.5',roe:'18.2%',div:'0.8%',rev:'₹2.10L Cr',about:'India\'s second largest private bank. Has undergone a remarkable turnaround under current management with focus on retail banking and digital.',facts:{Founded:'1994',Employees:'145,000+',HQ:'Mumbai',Sector:'Private Banking'},pros:['Strongest ROE improvement in the sector','Aggressive digital banking initiatives','Well-diversified loan book','Clean-up of legacy stressed assets complete'],cons:['Retail loan growth may slow with rate hikes','Insurance subsidiary performance variable','Exposure to stressed sectors historically','Valuation catching up to peers'],gptSugs:['ICICI Bank ROE trend last 5 years?','How is ICICI Bank\'s digital strategy?','ICICI Bank asset quality update?','Is ICICI Bank overvalued?']},
+     {name:'SBI',full:'State Bank of India',bse:'BSE:500112',price:'₹820',change:'+0.6%',up:true,mcap:'₹7.3L Cr',pe:'10.8',roe:'20.1%',div:'1.8%',rev:'₹3.50L Cr',about:'India\'s largest bank by total assets. Government-owned PSU bank with the most extensive branch network in the country.',facts:{Founded:'1955',Employees:'230,000+',HQ:'Mumbai',Sector:'Public Banking'},pros:['Cheapest valuation among large banks','Highest ROE among PSU banks','Massive branch and digital reach','Subsidiary value (SBI Life, SBI Cards) unlocking'],cons:['Government ownership limits agility','Historically prone to PSU lending mandates','Lower margins than private peers','NPAs higher than private banks'],gptSugs:['SBI vs HDFC Bank — which is cheaper?','SBI subsidiary valuations?','SBI NPA trend last 3 years?','Is SBI a good dividend stock?']}
+   ]},
+  {id:'pharma',name:'Pharmaceuticals & Healthcare',emoji:'💊',desc:'Pharmaceutical companies, hospitals, diagnostics, and healthcare technology providers serving domestic and global markets.',views:'2.8k',trending:false,companies:10,updated:'Apr 8, 2026',
+   overview:'India is the pharmacy of the world — supplying 20% of global generic medicines. Domestic healthcare spend is growing at 15%+ as insurance penetration rises.',
+   pros:['India supplies 20% of global generics — structural advantage','Domestic healthcare demand rising with insurance penetration','R&D pipeline in biosimilars and specialty drugs','Defensive sector — performs well in market downturns'],
+   cons:['USFDA regulatory risks and warning letters','Price controls on essential medicines limit pricing power','R&D investment heavy with uncertain outcomes','Currency fluctuation impacts export revenues'],
+   cos:[
+     {name:'Sun Pharma',full:'Sun Pharmaceutical Industries',bse:'BSE:524715',price:'₹1,680',change:'+1.2%',up:true,mcap:'₹4.0L Cr',pe:'35.2',roe:'14.5%',div:'0.8%',rev:'₹48,500 Cr',about:'India\'s largest pharmaceutical company and the world\'s fourth largest specialty generics company. Strong presence in US, India, and emerging markets.',facts:{Founded:'1983',Employees:'41,000+',HQ:'Mumbai',Sector:'Pharmaceuticals'},pros:['Market leader in Indian pharma','Specialty portfolio (Ilumya, Cequa) gaining traction','Strong cash flows and low debt','Diversified across geographies'],cons:['US generic pricing pressure ongoing','USFDA compliance remains a risk','Promoter governance concerns historically','High PE relative to growth rate'],gptSugs:['Sun Pharma specialty revenue growth?','USFDA inspection status for Sun Pharma?','Sun Pharma vs Dr Reddy\'s comparison?','What is Sun Pharma\'s US pipeline?']}
+   ]},
+  {id:'ev',name:'Electric Vehicles & Clean Energy',emoji:'⚡',desc:'Companies manufacturing EVs, EV components, batteries, solar, wind, and clean energy infrastructure.',views:'3.5k',trending:true,companies:8,updated:'Apr 11, 2026',
+   overview:'India\'s EV market is growing at 40%+ CAGR. Government subsidies (FAME III), falling battery costs, and rising fuel prices are accelerating adoption.',
+   pros:['40%+ CAGR in EV adoption in India','Government subsidies and policy tailwinds (FAME III)','Falling battery costs improving unit economics','First-mover advantage in two-wheeler EVs'],
+   cons:['Most companies are still pre-profit or early-stage','Charging infrastructure still underdeveloped','Technology risk — battery tech evolving rapidly','High competition from established automakers entering EVs'],
+   cos:[]},
+  {id:'fmcg',name:'FMCG & Consumer Goods',emoji:'🛒',desc:'Companies producing everyday consumer products — food, beverages, personal care, household goods.',views:'2.1k',trending:false,companies:10,updated:'Apr 5, 2026',
+   overview:'India\'s FMCG sector is the 4th largest globally. Rural recovery, premiumization, and D2C brands are key themes driving the next phase of growth.',
+   pros:['Recession-resistant — essential goods demand is stable','Premiumization trend boosting margins','Rural India recovery driving volume growth','Strong brand moats and pricing power'],
+   cons:['Input cost inflation (palm oil, crude) squeezing margins','Intense competition from D2C brands','Slow urban growth in mature categories','High valuations across the sector'],
+   cos:[]},
+  {id:'realestate',name:'Real Estate & Infrastructure',emoji:'🏗️',desc:'Real estate developers, construction companies, and infrastructure builders creating India\'s urban landscape.',views:'1.8k',trending:false,companies:8,updated:'Apr 7, 2026',
+   overview:'India\'s real estate is in a cyclical upturn — best affordability in a decade, low inventory, and government infrastructure push (highways, metros, smart cities).',
+   pros:['Best housing affordability in a decade','Government infrastructure spending at all-time high','Low unsold inventory in key cities','Commercial real estate demand strong from GCCs'],
+   cons:['Interest rate sensitive — rate hikes hurt demand','Long project cycles and execution risks','Regulatory and approval delays common','High leverage in some developers'],
+   cos:[]}
+],
+};
+
+// ═══════ RENDER FUNCTIONS ═══════
+let currentSector=null,currentCompany=null;
+
+function renderSectors(filter=''){
+  const grid=document.getElementById('sectorsGrid');
+  const filtered=DATA.sectors.filter(s=>s.name.toLowerCase().includes(filter.toLowerCase()));
+  grid.innerHTML=filtered.map(s=>`
+    <div class="sector-card" onclick="showCompanies('${s.id}')">
+      <div class="sc-top">
+        <div class="sc-meta">
+          <span class="sc-views">👁 ${s.views} views</span>
+          ${s.trending?'<span class="sc-trending">🔥 Trending</span>':''}
+        </div>
+        <div class="sc-emoji">${s.emoji}</div>
+      </div>
+      <div class="sc-name">${s.name}</div>
+      <div class="sc-desc">${s.desc}</div>
+      <div class="sc-bottom">
+        <span class="sc-count">🏢 ${s.companies} companies</span>
+        <span class="sc-updated"><span class="dot"></span> Updated ${s.updated}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showSectors(){
+  currentSector=null;currentCompany=null;
+  document.getElementById('viewSectors').classList.remove('hidden');
+  document.getElementById('viewCompanies').classList.add('hidden');
+  document.getElementById('viewCompanies').style.display='none';
+  document.getElementById('viewDetail').classList.add('hidden');
+  document.getElementById('viewDetail').style.display='none';
+  document.getElementById('breadcrumb').innerHTML='<a href="#" onclick="showSectors();return false">All Sectors</a>';
+  document.getElementById('searchInput').value='';
+  renderSectors();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showCompanies(sectorId){
+  const s=DATA.sectors.find(x=>x.id===sectorId);
+  if(!s)return;
+  currentSector=s;currentCompany=null;
+  document.getElementById('viewSectors').classList.add('hidden');
+  document.getElementById('viewCompanies').style.display='block';
+  document.getElementById('viewCompanies').classList.remove('hidden');
+  document.getElementById('viewDetail').style.display='none';
+  document.getElementById('breadcrumb').innerHTML=`<a href="#" onclick="showSectors();return false">All Sectors</a><span class="sep">›</span><span>${s.name}</span>`;
+
+  document.getElementById('sectorHeader').innerHTML=`
+    <div class="sh-info"><h2>${s.emoji} ${s.name}</h2><p>${s.desc}</p></div>
+    <div class="sh-stats">
+      <div class="sh-stat"><div class="ss-val">${s.companies}</div><div class="ss-label">Companies</div></div>
+      <div class="sh-stat"><div class="ss-val">${s.views}</div><div class="ss-label">Views</div></div>
+    </div>`;
+
+  document.getElementById('sectorOverview').innerHTML=`
+    <div class="so-title">Sector Overview</div>
+    <div class="so-text">${s.overview}</div>
+    <div class="so-pros-cons">
+      <div class="so-col pros"><h4>✦ Tailwinds</h4><ul>${s.pros.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+      <div class="so-col cons"><h4>✦ Headwinds</h4><ul>${s.cons.map(c=>`<li>${c}</li>`).join('')}</ul></div>
+    </div>`;
+
+  const list=document.getElementById('companiesList');
+  if(s.cos.length===0){
+    list.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-dim);font-size:.9rem">Company data for this sector is coming soon. We\'re adding BSE-listed companies every week.</div>';
+  } else {
+    list.innerHTML=s.cos.map((c,i)=>{
+      const colors=['var(--accent-deep)','var(--blue)','var(--gold)','var(--purple)','var(--amber)'];
+      return `<div class="company-row" onclick="showDetail('${currentSector.id}',${i})">
+        <div class="cr-name"><div class="cr-avatar" style="background:${colors[i%5]}">${c.name.substring(0,2)}</div><div><div class="cr-title">${c.name}</div><div class="cr-sub">${c.bse}</div></div></div>
+        <div class="cr-val">${c.price}</div>
+        <div class="cr-change ${c.up?'green':'red'}">${c.change}</div>
+        <div class="cr-mcap">${c.mcap}</div>
+        <div class="cr-arrow">→</div>
+      </div>`;
+    }).join('');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showDetail(sectorId,companyIdx){
+  const s=DATA.sectors.find(x=>x.id===sectorId);
+  const c=s.cos[companyIdx];
+  if(!c)return;
+  currentCompany=c;
+  document.getElementById('viewCompanies').style.display='none';
+  document.getElementById('viewDetail').style.display='block';
+  document.getElementById('viewDetail').classList.remove('hidden');
+  document.getElementById('breadcrumb').innerHTML=`<a href="#" onclick="showSectors();return false">All Sectors</a><span class="sep">›</span><a href="#" onclick="showCompanies('${s.id}');return false">${s.name}</a><span class="sep">›</span><span>${c.name}</span>`;
+
+  document.getElementById('detailHeader').innerHTML=`
+    <div class="dh-top">
+      <div class="dh-avatar" style="background:linear-gradient(135deg,var(--accent-deep),var(--accent))">${c.name.substring(0,2)}</div>
+      <div class="dh-info"><h2>${c.full}</h2><div class="dh-sub">${c.bse} · ${c.facts.Sector}</div></div>
+    </div>
+    <div class="dh-metrics">
+      <div class="dh-metric"><div class="dm-val">${c.price}</div><div class="dm-label">Price</div></div>
+      <div class="dh-metric"><div class="dm-val ${c.up?'green':'red'}">${c.change}</div><div class="dm-label">Today</div></div>
+      <div class="dh-metric"><div class="dm-val">${c.mcap}</div><div class="dm-label">Market Cap</div></div>
+      <div class="dh-metric"><div class="dm-val">${c.pe}</div><div class="dm-label">P/E Ratio</div></div>
+      <div class="dh-metric"><div class="dm-val">${c.roe}</div><div class="dm-label">ROE</div></div>
+    </div>`;
+
+  document.getElementById('detailContent').innerHTML=`
+    <div class="detail-panel">
+      <div class="dp-title">About</div>
+      <div class="about-text">${c.about}</div>
+      <div class="key-facts">
+        ${Object.entries(c.facts).map(([k,v])=>`<div class="kf-row"><span class="kf-label">${k}</span><span class="kf-val">${v}</span></div>`).join('')}
+        <div class="kf-row"><span class="kf-label">P/E Ratio</span><span class="kf-val">${c.pe}</span></div>
+        <div class="kf-row"><span class="kf-label">ROE</span><span class="kf-val">${c.roe}</span></div>
+        <div class="kf-row"><span class="kf-label">Dividend Yield</span><span class="kf-val">${c.div}</span></div>
+        <div class="kf-row"><span class="kf-label">Revenue</span><span class="kf-val">${c.rev}</span></div>
+      </div>
+    </div>
+    <div class="detail-panel">
+      <div class="dp-title">Pros & Cons</div>
+      <div class="pc-section pros">
+        <h4><span>✦</span> Strengths</h4>
+        <ul class="pc-list">${c.pros.map(p=>`<li><span class="pc-icon">↑</span>${p}</li>`).join('')}</ul>
+      </div>
+      <div class="pc-section cons">
+        <h4><span>✦</span> Risks</h4>
+        <ul class="pc-list">${c.cons.map(p=>`<li><span class="pc-icon">↓</span>${p}</li>`).join('')}</ul>
+      </div>
+    </div>
+    <div class="company-gpt">
+      <div class="gpt-box">
+        <div class="gpt-header">
+          <div class="gpt-icon">🤖</div>
+          <div><div class="gpt-title">CompanyGPT — ${c.name}</div><div class="gpt-sub">Ask anything about ${c.full}. Answers based on quarterly reports, annual filings, and public data.</div></div>
+        </div>
+        <div class="gpt-suggestions" id="gptSuggestions">
+          ${c.gptSugs.map(q=>`<div class="gpt-sug" onclick="askGPT('${q.replace(/'/g,"\\'")}')">${q}</div>`).join('')}
+        </div>
+        <div class="gpt-chat" id="gptChat"></div>
+        <div class="gpt-input-row">
+          <input class="gpt-input" id="gptInput" placeholder="Ask about ${c.name}..." onkeydown="if(event.key==='Enter')sendGPT()">
+          <button class="gpt-send" onclick="sendGPT()">Ask →</button>
+        </div>
+        <div class="gpt-disclaimer">⚠️ CompanyGPT provides information based on publicly available data. This is not investment advice. Always verify with official filings.</div>
+      </div>
+    </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════ CompanyGPT Mock ═══════
+const GPT_RESPONSES={
+  'What was TCS revenue growth last quarter?':'TCS reported Q3 FY26 revenue of ₹64,259 Cr, growing 5.2% YoY in constant currency terms. The growth was led by BFSI (+7.1%) and Life Sciences (+8.3%) verticals. Management maintained FY26 guidance of 6-8% CC growth.\n\n📄 Source: TCS Q3 FY26 Earnings Report, Jan 2026',
+  'How does TCS compare to Infosys?':'TCS vs Infosys — key differences:\n\n• Revenue: TCS (₹2.41L Cr) is ~49% larger than Infosys (₹1.62L Cr)\n• Margins: TCS has higher EBIT margins (~26%) vs Infosys (~21%)\n• Growth: Infosys digital revenue growing faster at 32% vs TCS 28%\n• Valuation: TCS trades at 32x PE vs Infosys at 28x — making Infosys relatively cheaper\n• Dividend: Infosys yields 2.3% vs TCS 1.2%\n\nBoth are strong — TCS for stability, Infosys for growth-at-value.\n\n📄 Source: FY26 Annual Reports, Screener.in',
+  'What are the risks of investing in TCS?':'Key risks for TCS investors:\n\n1. Premium valuation (32x PE) — limited margin of safety if growth disappoints\n2. BFSI sector dependence (~33% of revenue) — banking slowdown in US/Europe could hurt\n3. Attrition at 12.5% — while improving, talent costs remain elevated\n4. Currency hedging — strong rupee would reduce reported earnings\n5. Generative AI disruption — could reduce demand for traditional IT services\n\nHowever, TCS\'s diversified client base (1,200+ clients) and strong deal pipeline provide resilience.\n\n📄 Source: TCS FY26 Annual Report, Investor Presentation',
+  'What is TCS dividend history?':'TCS dividend track record (last 5 years):\n\n• FY26: ₹115/share (including ₹73 special dividend)\n• FY25: ₹91/share\n• FY24: ₹75/share\n• FY23: ₹115/share (including special)\n• FY22: ₹43/share\n\nTCS has a consistent dividend policy with ~50-80% payout ratio. Additionally, TCS has conducted multiple buybacks totaling ₹72,000 Cr since 2017.\n\n📄 Source: TCS Annual Reports, BSE Filings',
+};
+
+function askGPT(question){
+  document.getElementById('gptInput').value='';
+  const chat=document.getElementById('gptChat');
+  chat.innerHTML+=`<div class="gpt-msg gpt-msg-user">${question}</div>`;
+
+  const response=GPT_RESPONSES[question]||`Based on available filings and public data for ${currentCompany.name}:\n\nThis is a great question. In a live version, CompanyGPT would analyze ${currentCompany.full}'s quarterly reports, annual filings, investor presentations, and screener data to give you a detailed, sourced answer.\n\n📄 Source: ${currentCompany.full} public filings, Screener.in`;
+
+  setTimeout(()=>{
+    chat.innerHTML+=`<div class="gpt-msg gpt-msg-ai"><div class="gpt-tag">CompanyGPT · ${currentCompany.name}</div>${response.replace(/\n/g,'<br>')}</div>`;
+    chat.scrollTop=chat.scrollHeight;
+  },600);
+
+  document.getElementById('gptSuggestions').style.display='none';
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function sendGPT(){
+  const input=document.getElementById('gptInput');
+  if(!input.value.trim())return;
+  askGPT(input.value.trim());
+}
+
+function handleSearch(val){
+  if(currentSector||currentCompany)return;
+  renderSectors(val);
+}
+
+// ═══════ INIT ═══════
+renderSectors();
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>50)});
+</script>
+</body>
+</html>

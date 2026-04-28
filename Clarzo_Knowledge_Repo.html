@@ -25,8 +25,9 @@ a{color:inherit;text-decoration:none}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 0;transition:all .4s;backdrop-filter:blur(20px);background:rgba(4,15,10,.6);border-bottom:1px solid transparent}
 nav.scrolled{background:rgba(4,15,10,.92);border-bottom-color:var(--border)}
 nav .container{display:flex;align-items:center;justify-content:space-between}
-.logo{font-family:var(--font-display);font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:0}
+.logo{font-family:var(--font-display);font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:8px}
 .logo span{color:var(--accent)}
+.logo-img{height:28px;width:auto;filter:invert(1);mix-blend-mode:screen}
 .nav-links{display:flex;align-items:center;gap:36px;font-size:.9rem;font-weight:500}
 .nav-links a{color:var(--text-dim);transition:color .3s}
 .nav-links a:hover,.nav-links a.active{color:var(--text)}
@@ -200,7 +201,7 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;color:var(--text-d
 
 <nav id="nav">
   <div class="container">
-    <a href="Clarzo_Landing_Page.html" class="logo">Clarzo<span>.ai</span></a>
+    <a href="Clarzo_Landing_Page.html" class="logo"><img src="images/logo.png" class="logo-img" alt="Clarzo">Clarzo<span>.ai</span></a>
     <div class="nav-links">
       <a href="Clarzo_Product_Page.html">Product</a>
       <a href="Clarzo_Stock_Discovery.html">Discovery</a>
@@ -208,8 +209,8 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;color:var(--text-d
       <a href="Clarzo_About_Us.html">About Us</a>
     </div>
     <div class="nav-cta">
-      <a href="#" class="btn btn-outline">Login</a>
-      <a href="#" class="btn btn-primary">Review My Portfolio</a>
+      <a href="https://app.clarzo.ai/login" class="btn btn-outline">Login</a>
+      <a href="https://app.clarzo.ai/login" class="btn btn-primary">Review My Portfolio</a>
     </div>
   </div>
 </nav>
@@ -320,7 +321,7 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;color:var(--text-d
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
-        <div class="logo">Clarzo<span>.ai</span></div>
+        <div class="logo"><img src="images/logo.png" class="logo-img" alt="Clarzo">Clarzo<span>.ai</span></div>
         <p>Your AI-powered wealth partner — helping you track, plan, and grow your money with personalized insights and smarter financial decisions.</p>
         <div class="footer-social">
           <a href="#" aria-label="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
@@ -331,7 +332,7 @@ footer{border-top:1px solid var(--border);padding:60px 0 30px;color:var(--text-d
       </div>
       <div class="footer-col"><h4>Explore</h4><a href="Clarzo_Knowledge_Repo.html">Knowledge Repo</a><a href="Clarzo_Calculators.html">Calculators</a><a href="Clarzo_About_Us.html">About Us</a><a href="Clarzo_Landing_Page.html#faq">FAQ</a></div>
       <div class="footer-col"><h4>Legal</h4><a href="Clarzo_Privacy_Security.html">Privacy & Security</a><a href="Clarzo_Terms.html">Terms & Conditions</a></div>
-      <div class="footer-col"><h4>Get Started</h4><a href="#">Login</a><a href="#">Review Portfolio</a><a href="#">Talk to Expert</a></div>
+      <div class="footer-col"><h4>Get Started</h4><a href="https://app.clarzo.ai/login">Login</a><a href="https://app.clarzo.ai/login">Review Portfolio</a><a href="#">Talk to Expert</a></div>
     </div>
     <div class="footer-bottom">
       <span>© 2021–2025 Clarzo. All Rights Reserved | Made with ❤️</span>
